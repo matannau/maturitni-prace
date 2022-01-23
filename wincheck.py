@@ -60,6 +60,7 @@ def check_right_up(i, j, symbol, grid):
     if total == 5:
         return True
 
+
 def check_right_down(i, j, symbol, grid):
     total = 0
     for x in range(5):
