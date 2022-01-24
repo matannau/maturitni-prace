@@ -1,4 +1,6 @@
 from wincheck import check_lines, check_diagonals
+from bot import getMove, findPrimaryValue
+
 
 gamegrid = [
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
@@ -7,7 +9,7 @@ gamegrid = [
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["X"], ["_"], ["_"], ["_"], ["_"]],
+[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
 [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
@@ -22,6 +24,8 @@ def loadgrid(grid):
                 print(grid[i][j])
             else:
                 print(grid[i][j], end="")
+
+    print("\n")
 
 
 def check_win(grid):
@@ -39,5 +43,16 @@ def check_win(grid):
                     return "O has won"
     return "No one has won"
 
+def place_symbol(grid, symbol, coordinates):
+    if grid[coordinates[0]][coordinates[1]] == ["_"]:
+        grid[coordinates[0]][coordinates[1]] = [symbol]
+    else:
+        print("You can not chose this spot")
+
+x, y = findPrimaryValue(gamegrid, size)
+arr = getMove(x, y)
+place_symbol(gamegrid, "O", arr)
+loadgrid(gamegrid)
+place_symbol(gamegrid, "X", [3, 4, 2])
 loadgrid(gamegrid)
 print(check_win(gamegrid))
