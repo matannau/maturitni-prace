@@ -1,23 +1,8 @@
 from wincheck import check_lines, check_diagonals
-from bot import getMove, findPrimaryValue
+from bot import get_move, find_primary_value
+from grid import create_grid
 
-
-gamegrid = [
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-[["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
-]
-
-size = 10
-
-def loadgrid(grid):
+def load_grid(grid, size):
     for i in range(size):
         for j in range(size):
             if j == size - 1:
@@ -28,7 +13,7 @@ def loadgrid(grid):
     print("\n")
 
 
-def check_win(grid):
+def check_win(grid, size):
     for i in range(size):
         for j in range(size):
             if grid[i][j] == ["X"]:
@@ -49,10 +34,15 @@ def place_symbol(grid, symbol, coordinates):
     else:
         print("You can not chose this spot")
 
-x, y = findPrimaryValue(gamegrid, size)
-arr = getMove(x, y)
-place_symbol(gamegrid, "O", arr)
-loadgrid(gamegrid)
+gamegrid, size = create_grid(8)
+x, y = find_primary_value(gamegrid, size)
+arr = get_move(x, y)
 place_symbol(gamegrid, "X", [3, 4, 2])
-loadgrid(gamegrid)
-print(check_win(gamegrid))
+
+x, y = find_primary_value(gamegrid, size)
+arr = get_move(x, y)
+load_grid(gamegrid, size)
+place_symbol(gamegrid, "O", arr)
+
+load_grid(gamegrid, size)
+print(check_win(gamegrid, size))
