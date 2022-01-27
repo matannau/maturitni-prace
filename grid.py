@@ -1,8 +1,8 @@
 def create_grid(size):
     grid = []
-    for i in range(size):
+    for _ in range(size):
         row = []
-        for j in range(size):
+        for _ in range(size):
             row.append(["_"])
         
         grid.append(row)
