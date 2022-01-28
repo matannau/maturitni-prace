@@ -44,6 +44,14 @@ def check_if_empty(i, j, size, grid):
         return True
     return False
 
+def find_empty_spaces(i, j, size, grid, player_symbol, y, x):
+    value = 0
+    for num in range(1, 5):
+        if check_spaces(i - y*num, j - x*num, size, grid, player_symbol):
+            value += 1
+    
+    return value
+
 
 def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
     # Calls functions check_if_empty, check_spaces and check_potential_development
@@ -54,7 +62,7 @@ def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
             if not (x == y == 0):
                 if check_if_empty(i + y, j + x, size, grid) and check_spaces(i + 4*y, j + 4*x, size, grid, player_symbol):
                     move = check_potential_development(
-                        i, j, grid, player_symbol, computer_symbol, y, x)
+                        i, j, size, grid, player_symbol, computer_symbol, y, x)
                     if move not in possible_move:
                         possible_move.append(move)
 
@@ -74,6 +82,7 @@ def loop_increment_primary(i, j, size, grid, player_symbol):
 
 
 def find_best_move_value(grid, size, player_symbol, computer_symbol):
+    # Calls find_move_value, then loops through the list and finds the best value
     moves = find_move_value(grid, size, player_symbol, computer_symbol)
     value = float("inf")
     for move in moves:
@@ -83,7 +92,7 @@ def find_best_move_value(grid, size, player_symbol, computer_symbol):
     return value, moves
 
 
-def check_potential_development(i, j, grid, player_symbol, computer_symbol, y, x):
+def check_potential_development(i, j, size, grid, player_symbol, computer_symbol, y, x):
     # Checks 4 spots next to grid[i, j] in selected direction and then
     # counts the value od grid[i, j] based on it
     #
@@ -97,7 +106,8 @@ def check_potential_development(i, j, grid, player_symbol, computer_symbol, y, x
             value += 10
             break
     
-    for num in range(1, 5):
+    max = find_empty_spaces(i, j, size, grid, player_symbol, y, x)
+    for num in range(1, max):
         space2 = grid[i - num * y][j - num * x]
         if space2 == [computer_symbol]:
             value -= 1
@@ -158,15 +168,22 @@ Tests :)
 
 gamegrid, size = create_grid(10)
 place_symbol(gamegrid, "X", [5, 6, 4])
-place_symbol(gamegrid, "X", [5, 3, 4])
-place_symbol(gamegrid, "O", [3, 4, 4])
-place_symbol(gamegrid, "O", [4, 4, 4])
-place_symbol(gamegrid, "O", [2, 4, 4])
+place_symbol(gamegrid, "X", [7, 3, 4])
+place_symbol(gamegrid, "O", [6, 3, 4])
+place_symbol(gamegrid, "O", [6, 2, 4])
+place_symbol(gamegrid, "O", [6, 1, 4])
+place_symbol(gamegrid, "O", [6, 5, 4])
 # # # x, y, grid = find_primary_value(gamegrid, size)
 load_grid(gamegrid, size)
 # # size = 10
 # # i, j = 6, 7
 
 # x = (find_move_value(gamegrid, size, "X", "O"))
-# print(x)
-print(find_best_move_value(gamegrid, size, "X", "O"))
+# # print(x)
+# print(find_best_move_value(gamegrid, size, "X", "O"))
+
+# print(find_empty_spaces(2, 3, size, gamegrid, "X", 0, 1))
+
+print(loop_increment_basic(6, 3, size, gamegrid, "X", "O"))
+print(loop_increment_basic(6, 2, size, gamegrid, "X", "O"))
+print(loop_increment_basic(6, 1, size, gamegrid, "X", "O"))
