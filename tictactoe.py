@@ -1,5 +1,5 @@
 from wincheck import check_lines, check_diagonals
-from bot import get_move, find_primary_value
+from bot import find_best_move_value, get_move, find_primary_value
 from grid import create_grid
 
 def load_grid(grid, size):
@@ -34,15 +34,28 @@ def place_symbol(grid, symbol, coordinates):
     else:
         print("You can not chose this spot")
 
-gamegrid, size = create_grid(8)
-x, y = find_primary_value(gamegrid, size)
+gamegrid, size = create_grid(10)
+l = int(input("Zadej y souradnici: "))
+m = int(input("Zadej x souradnici: "))
+place_symbol(gamegrid, "X", [l, m])
+x, y = find_primary_value(gamegrid, size, "X")
 arr = get_move(x, y)
-place_symbol(gamegrid, "X", [3, 4, 2])
-
-x, y = find_primary_value(gamegrid, size)
-arr = get_move(x, y)
-load_grid(gamegrid, size)
 place_symbol(gamegrid, "O", arr)
+load_grid(gamegrid, size)
+
+while True:
+    l = int(input("Zadej y souradnici: "))
+    m = int(input("Zadej x souradnici: "))
+    place_symbol(gamegrid, "X", [l, m])
+    x, y = find_best_move_value(gamegrid, size, "X", "O")
+    arr = get_move(x, y)
+    place_symbol(gamegrid, "O", arr)
+    load_grid(gamegrid, size)
+
+    if check_win(gamegrid, size) != "No one has won":
+        break
+
+
 
 load_grid(gamegrid, size)
 print(check_win(gamegrid, size))
