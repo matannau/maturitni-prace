@@ -45,7 +45,7 @@ def check_if_empty(i, j, size, grid):
     return False
 
 
-def loop_increment_basic(i, j, size, grid, player_symbol):
+def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
     # Calls functions check_if_empty, check_spaces and check_potential_development
     # in all 8 directions and then creates a list of possible moves
     possible_move = []
@@ -54,7 +54,7 @@ def loop_increment_basic(i, j, size, grid, player_symbol):
             if not (x == y == 0):
                 if check_if_empty(i + y, j + x, size, grid) and check_spaces(i + 4*y, j + 4*x, size, grid, player_symbol):
                     move = check_potential_development(
-                        i, j, grid, player_symbol, y, x)
+                        i, j, grid, player_symbol, computer_symbol, y, x)
                     if move not in possible_move:
                         possible_move.append(move)
 
@@ -73,37 +73,8 @@ def loop_increment_primary(i, j, size, grid, player_symbol):
     return value
 
 
-def filter_moves(moves):
-    # Takes a list of coordinates and its values
-    #
-    # If one spot has multiple values, it calculates the average
-    possible_moves = []
-    len_moves = len(moves)
-    for i in range(1, len_moves):
-        if moves[i][0] == moves[i - 1][0] and moves[i][1] == moves[i - 1][1]:
-            value = (moves[i][2] + moves[i - 1][2]) / 2
-            possible_moves.append([moves[i][0], moves[i][1], value])
-        else:
-            if i == 1:
-                possible_moves.append(moves[i - 1])
-            if i < len_moves - 1:
-                if moves[i][0] == moves[i + 1][0] and moves[i][1] == moves[i + 1][1]:
-                    continue
-                else:
-                    possible_moves.append(moves[i])
-            else:
-                possible_moves.append(moves[i])
-
-    return possible_moves
-
-
-def find_best_move_value(moves):
-    # Takes a list of possible moves, then calls filter_moves 7 times to ensure
-    # that one spot has only one value
-    #
-    # After, it finds the smallest value of all spots and returns it wih possible moves
-    for _ in range(7):
-        moves = filter_moves(moves)
+def find_best_move_value(grid, size, player_symbol, computer_symbol):
+    moves = find_move_value(grid, size, player_symbol, computer_symbol)
     value = float("inf")
     for move in moves:
         if move[2] < value:
@@ -112,7 +83,7 @@ def find_best_move_value(moves):
     return value, moves
 
 
-def check_potential_development(i, j, grid, player_symbol, y, x):
+def check_potential_development(i, j, grid, player_symbol, computer_symbol, y, x):
     # Checks 4 spots next to grid[i, j] in selected direction and then
     # counts the value od grid[i, j] based on it
     #
@@ -125,8 +96,16 @@ def check_potential_development(i, j, grid, player_symbol, y, x):
         elif space == [player_symbol]:
             value += 10
             break
+    
+    for num in range(1, 5):
+        space2 = grid[i - num * y][j - num * x]
+        if space2 == [computer_symbol]:
+            value -= 1
+        else:
+            break
 
-    move = [i, j, value]
+
+    move = [i + y, j + x, value]
     return move
 
 
@@ -147,14 +126,16 @@ def find_primary_value(grid, size, player_symbol):
     return best_value, possible_moves
 
 
-def find_move_value(grid, size, player_symbol):
+def find_move_value(grid, size, player_symbol, computer_symbol):
     # Creates a list of all possible moves for the whole grid
     possible_moves = []
     for i in range(size):
         for j in range(size):
-            if grid[i][j] == ["_"]:
-                possible_moves.extend(loop_increment_basic(
-                    i, j, size, grid, player_symbol))
+            if grid[i][j] == [computer_symbol]:
+                moves = loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol)
+                for item in moves:
+                    if item not in possible_moves:
+                        possible_moves.append(item)
 
     return possible_moves
 
@@ -176,12 +157,16 @@ Tests :)
 '''
 
 gamegrid, size = create_grid(10)
-place_symbol(gamegrid, "X", [5, 4, 4])
+place_symbol(gamegrid, "X", [5, 6, 4])
 place_symbol(gamegrid, "X", [5, 3, 4])
-place_symbol(gamegrid, "X", [8, 5, 4])
-# x, y, grid = find_primary_value(gamegrid, size)
-# load_grid(grid, size)
-size = 10
-i, j = 6, 7
-list = find_move_value(gamegrid, size, "X")
-print(find_best_move_value(list))
+place_symbol(gamegrid, "O", [3, 4, 4])
+place_symbol(gamegrid, "O", [4, 4, 4])
+place_symbol(gamegrid, "O", [2, 4, 4])
+# # # x, y, grid = find_primary_value(gamegrid, size)
+load_grid(gamegrid, size)
+# # size = 10
+# # i, j = 6, 7
+
+# x = (find_move_value(gamegrid, size, "X", "O"))
+# print(x)
+print(find_best_move_value(gamegrid, size, "X", "O"))
