@@ -3,15 +3,17 @@ from bot import find_best_move_value, get_move, find_primary_value
 from grid import create_grid
 
 def load_grid(grid, size):
+    print("    0    1    2    3    4    5    6    7    8    9")
     for i in range(size):
         for j in range(size):
-            if j == size - 1:
+            if j == 0:
+                print(i, grid[i][j], end="")
+            elif j == size - 1:
                 print(grid[i][j])
             else:
                 print(grid[i][j], end="")
 
     print("\n")
-
 
 def check_win(grid, size):
     for i in range(size):
