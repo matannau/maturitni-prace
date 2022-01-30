@@ -14,9 +14,12 @@ def create_grid(size):
 
 
 def load_grid(grid, size):
+    print("    0    1    2    3    4    5    6    7    8    9")
     for i in range(size):
         for j in range(size):
-            if j == size - 1:
+            if j == 0:
+                print(i, grid[i][j], end="")
+            elif j == size - 1:
                 print(grid[i][j])
             else:
                 print(grid[i][j], end="")
@@ -44,14 +47,25 @@ def check_if_empty(i, j, size, grid):
         return True
     return False
 
-def find_empty_spaces(i, j, size, grid, player_symbol, y, x):
-    # Finds the number of empty spaces next to the selected one
+def find_empty_spots(i, j, size, grid, player_symbol, y, x):
+    # Finds the number of empty spots next to the selected one
     value = 0
     for num in range(1, 5):
         if check_spaces(i - y*num, j - x*num, size, grid, player_symbol):
             value += 1
     
     return value
+
+
+def find_all_empty_spots(grid, size):
+    empty_spots = []
+    for i in range(size):
+        for j in range(size):
+            if grid[i][j] == ["_"]:
+                empty_spots.append([i, j, 10])
+    
+    return empty_spots
+
 
 
 def find_a_4(i, j, size, grid, computer_symbol, y, x):
@@ -69,6 +83,7 @@ def find_a_4(i, j, size, grid, computer_symbol, y, x):
 
 
 def find_a_3(i, j, size, grid, player_symbol, computer_symbol, y, x):
+    # Finds a 3 and then decides which side is more suitable for playing
     value = 0
     if check_if_empty(i + 3*y, j + 3*x, size, grid) and check_if_empty(i - y, j - x, size, grid):
         if grid[i + 3*y][j + 3*x] == ["_"] and grid[i - y][j - x] == ["_"]:
@@ -88,8 +103,6 @@ def find_a_3(i, j, size, grid, player_symbol, computer_symbol, y, x):
                 
 
 def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
-    # Calls functions check_if_empty, check_spaces and check_potential_development
-    # in all 8 directions and then creates a list of possible moves
     possible_move = []
     for y in range(-1, 2):
         for x in range(-1, 2):
@@ -149,8 +162,8 @@ def check_potential_development(i, j, size, grid, player_symbol, computer_symbol
             value += 10
             break
     
-    max = find_empty_spaces(i, j, size, grid, player_symbol, y, x)
-    for num in range(1, max):
+    max = find_empty_spots(i, j, size, grid, player_symbol, y, x)
+    for num in range(1, max + 1):
         space2 = grid[i - num * y][j - num * x]
         if space2 == [computer_symbol]:
             value -= 1
@@ -190,6 +203,12 @@ def find_move_value(grid, size, player_symbol, computer_symbol):
                     if item not in possible_moves:
                         possible_moves.append(item)
 
+    if possible_moves == []:
+        moves = find_all_empty_spots(grid, size)
+        for item in moves:
+            possible_moves.append(item)
+
+
     return possible_moves
 
 
@@ -198,7 +217,7 @@ def get_move(best_value, possible_moves):
     # choses one randomly
     best_moves = []
     x = len(possible_moves)
-    for i in range(x - 1):
+    for i in range(x):
         if possible_moves[i][2] == best_value:
             best_moves.append(possible_moves[i])
 
@@ -210,24 +229,21 @@ Tests :)
 '''
 
 # gamegrid, size = create_grid(10)
-# place_symbol(gamegrid, "X", [5, 6, 4])
-# place_symbol(gamegrid, "X", [7, 3, 4])
-# place_symbol(gamegrid, "O", [2, 8, 4])
-# place_symbol(gamegrid, "O", [2, 7, 4])
-# place_symbol(gamegrid, "O", [2, 6, 4])
-# place_symbol(gamegrid, "O", [2, 5, 4])
+# place_symbol(gamegrid, "X", [3, 3])
+# place_symbol(gamegrid, "X", [2, 5])
+# place_symbol(gamegrid, "X", [2, 2])
+# place_symbol(gamegrid, "X", [4, 5])
 
-# # # # # x, y, grid = find_primary_value(gamegrid, size)
+# place_symbol(gamegrid, "O", [3, 6])
+# place_symbol(gamegrid, "O", [2, 6])
+# place_symbol(gamegrid, "O", [2, 7])
+# # x, y = find_best_move_value(gamegrid, size, "X", "O")
+# # arr = get_move(x, y)
+# # place_symbol(gamegrid, "O", arr)
+
+
 # load_grid(gamegrid, size)
-# # # # size = 10
-# # # # i, j = 6, 7
-
-# # x = (find_move_value(gamegrid, size, "X", "O"))
-# # # print(x)
-# print(find_best_move_value(gamegrid, size, "X", "O"))
-
-# # print(find_empty_spaces(2, 3, size, gamegrid, "X", 0, 1))
-
-# print(find_a_4(2, 5, size, gamegrid, "O", 1, 0))
-
-
+# print(find_move_value(gamegrid, size, "X", "O"))
+# x, y = find_best_move_value(gamegrid, size, "X", "O")
+# print(x, y)
+# print(get_move(x, y))
