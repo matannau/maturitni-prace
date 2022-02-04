@@ -140,12 +140,33 @@ def loop_increment_primary(i, j, size, grid, player_symbol):
 def find_best_move_value(grid, size, player_symbol, computer_symbol):
     # Calls find_move_value, then loops through the list and finds the best value
     moves = find_move_value(grid, size, player_symbol, computer_symbol)
+    for item in moves:
+        item.pop(3)
+
     value = float("inf")
     for move in moves:
         if move[2] < value:
             value = move[2]
 
     return value, moves
+
+def get_direction(i, j):
+    # 1 - right, left
+    # 2 - up, down
+    # 3 - rightup, lefudown
+    # 4 - leftup, right down
+    if i == 0:
+        return 1
+    if j == 0:
+        return 2
+    if i == 1:
+        if j == 1:
+            return 4
+        return 3
+    if i == -1:
+        if j == 1:
+            return 3
+        return 4
 
 
 def check_potential_development(i, j, size, grid, player_symbol, computer_symbol, y, x):
@@ -167,11 +188,11 @@ def check_potential_development(i, j, size, grid, player_symbol, computer_symbol
         space2 = grid[i - num * y][j - num * x]
         if space2 == [computer_symbol]:
             value -= 1
-        else:
+        elif space2 == [player_symbol]:
             break
 
 
-    move = [i + y, j + x, value]
+    move = [i + y, j + x, value, get_direction(y, x)]
     return move
 
 
@@ -228,22 +249,19 @@ def get_move(best_value, possible_moves):
 Tests :)
 '''
 
-# gamegrid, size = create_grid(10)
-# place_symbol(gamegrid, "X", [3, 3])
-# place_symbol(gamegrid, "X", [2, 5])
-# place_symbol(gamegrid, "X", [2, 2])
-# place_symbol(gamegrid, "X", [4, 5])
+gamegrid, size = create_grid(10)
+place_symbol(gamegrid, "X", [3, 3])
+place_symbol(gamegrid, "X", [2, 5])
+place_symbol(gamegrid, "X", [4, 4])
+place_symbol(gamegrid, "X", [4, 5])
 
-# place_symbol(gamegrid, "O", [3, 6])
-# place_symbol(gamegrid, "O", [2, 6])
-# place_symbol(gamegrid, "O", [2, 7])
+place_symbol(gamegrid, "O", [3, 6])
+place_symbol(gamegrid, "O", [2, 6])
+place_symbol(gamegrid, "O", [2, 7])
 # # x, y = find_best_move_value(gamegrid, size, "X", "O")
 # # arr = get_move(x, y)
 # # place_symbol(gamegrid, "O", arr)
 
 
-# load_grid(gamegrid, size)
-# print(find_move_value(gamegrid, size, "X", "O"))
-# x, y = find_best_move_value(gamegrid, size, "X", "O")
-# print(x, y)
-# print(get_move(x, y))
+load_grid(gamegrid, size)
+print(find_best_move_value(gamegrid, size, "O", "X"))
