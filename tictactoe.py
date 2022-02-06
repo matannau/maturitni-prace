@@ -33,12 +33,14 @@ def check_win(grid, size):
 def place_symbol(grid, symbol, coordinates):
     if grid[coordinates[0]][coordinates[1]] == ["_"]:
         grid[coordinates[0]][coordinates[1]] = [symbol]
+        return True
     else:
-        print("You can not chose this spot")
+        print("You can not chose this spot\n")
+        return False
 
 gamegrid, size = create_grid(10)
-l = int(input("Zadej y souradnici: "))
-m = int(input("Zadej x souradnici: "))
+l = int(input("Enter y coordinate: "))
+m = int(input("Enter x coordinate: "))
 place_symbol(gamegrid, "X", [l, m])
 x, y = find_primary_value(gamegrid, size, "X")
 arr = get_move(x, y)
@@ -46,11 +48,15 @@ place_symbol(gamegrid, "O", arr)
 load_grid(gamegrid, size)
 
 while True:
-    l = int(input("Zadej y souradnici: "))
-    m = int(input("Zadej x souradnici: "))
-    place_symbol(gamegrid, "X", [l, m])
+    while True:
+        l = int(input("Enter y coordinate: "))
+        m = int(input("Enter x coordinate: "))
+        if place_symbol(gamegrid, "X", [l, m]):
+            break
+
     x, y = find_best_move_value(gamegrid, size, "X", "O")
     arr = get_move(x, y)
+    print(f"Bot vybral: {arr}")
     place_symbol(gamegrid, "O", arr)
     load_grid(gamegrid, size)
 
