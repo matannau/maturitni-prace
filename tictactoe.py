@@ -1,5 +1,5 @@
 from wincheck import check_lines, check_diagonals
-from bot import find_best_move_value, get_move, find_primary_value
+from bot import find_best_move_value, get_move, find_primary_value, need_to_block
 from grid import create_grid
 
 def load_grid(grid, size):
@@ -53,9 +53,14 @@ while True:
         m = int(input("Enter x coordinate: "))
         if place_symbol(gamegrid, "X", [l, m]):
             break
-
-    x, y = find_best_move_value(gamegrid, size, "X", "O")
-    arr = get_move(x, y)
+    
+    boolean, player_value, player_moves = need_to_block(gamegrid, size, "O", "X")
+    computer_value, computer_moves = find_best_move_value(gamegrid, size, "X", "O")
+    if boolean:
+        arr = get_move(player_value, player_moves)
+    else:
+        arr = get_move(computer_value, computer_moves)
+    
     print(f"Bot vybral: {arr}")
     place_symbol(gamegrid, "O", arr)
     load_grid(gamegrid, size)
