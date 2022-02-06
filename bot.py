@@ -47,17 +47,9 @@ def check_if_empty(i, j, size, grid):
         return True
     return False
 
-def find_empty_spots(i, j, size, grid, player_symbol, y, x):
-    # Finds the number of empty spots next to the selected one
-    value = 0
-    for num in range(1, 5):
-        if check_spaces(i - y*num, j - x*num, size, grid, player_symbol):
-            value += 1
-    
-    return value
-
 
 def find_all_empty_spots(grid, size):
+    # Creates a list of all spots with no symbols
     empty_spots = []
     for i in range(size):
         for j in range(size):
@@ -93,11 +85,11 @@ def find_a_3(i, j, size, grid, player_symbol, computer_symbol, y, x):
 
     if value == 2:
         if check_spaces(i - 2*y, j - 2*x, size, grid, player_symbol) and check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
-            return True, [[i - y, j - x, 2], [i + 3*y, j + 3*x, 2]]
+            return True, [[i - y, j - x, 1.75], [i + 3*y, j + 3*x, 1.75]]
         elif not check_spaces(i - 2*y, j - 2*x, size, grid, player_symbol) and check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
-            return True, [[i + 3*y, j + 3*x, 2]]
+            return True, [[i + 3*y, j + 3*x, 1.75]]
         elif check_spaces(i - 2*y, j - 2*x, size, grid, player_symbol) and not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
-            return True, [[i - y, j - x, 2]]
+            return True, [[i - y, j - x, 1.75]]
     
     return False, []
                 
@@ -119,7 +111,7 @@ def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
                 elif check_if_empty(i + y, j + x, size, grid):
                     if check_spaces(i + 2*y, j + 2*x, size, grid, player_symbol) and check_spaces(i - 2*y, j - 2*x, size, grid, player_symbol):
                         move = check_potential_development(
-                            i, j, size, grid, player_symbol, computer_symbol, y, x)
+                            i, j, grid, player_symbol, y, x)
                         if move not in possible_move:
                             possible_move.append(move)
 
@@ -139,6 +131,7 @@ def loop_increment_primary(i, j, size, grid, player_symbol):
 
 
 def find_forks(moves):
+    # Tries to find forks by comparing multiple values of one spot
     moves = sorted(moves)
     possible_moves = [moves[0]]
     len_moves = len(moves)
@@ -196,7 +189,7 @@ def get_direction(i, j):
         return 4
 
 
-def check_potential_development(i, j, size, grid, player_symbol, computer_symbol, y, x):
+def check_potential_development(i, j, grid, player_symbol, y, x):
     # Checks 4 spots next to grid[i, j] in selected direction and then
     # counts the value od grid[i, j] based on it
     #
@@ -251,6 +244,15 @@ def find_move_value(grid, size, player_symbol, computer_symbol):
     return possible_moves
 
 
+def need_to_block(grid, size, computer_symbol, player_symbol):
+    value, moves = find_best_move_value(grid, size, computer_symbol, player_symbol)
+
+    if value < 2:
+        return True, value, moves
+    else:
+        return False, [], []
+
+
 def get_move(best_value, possible_moves):
     # Selects all best moves based on the best value and then
     # chooses one randomly
@@ -284,7 +286,8 @@ if __name__ == "__main__":
 
     load_grid(gamegrid, size)
     print(find_best_move_value(gamegrid, size, "X", "O"))
-    print(loop_increment_basic(8, 1, size, gamegrid, "X", "O"))
+    print(need_to_block(gamegrid, size, "O", "X"))
+    # print(loop_increment_basic(8, 1, size, gamegrid, "X", "O"))
     # moves = find_move_value(gamegrid, size, "O", "X")
     # # print(moves)
     # print(find_forks(moves))
