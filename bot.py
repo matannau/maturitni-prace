@@ -137,11 +137,37 @@ def loop_increment_primary(i, j, size, grid, player_symbol):
     return value
 
 
+def find_forks(moves):
+    moves = sorted(moves)
+    possible_moves = [moves[0]]
+    len_moves = len(moves)
+    for i in range(1, len_moves):
+        if moves[i][0] == moves[i - 1][0] and moves[i][1] == moves[i - 1][1]:
+            if moves[i][2] == 3:
+                if moves[i - 1][2] == 3:
+                    possible_moves.append([moves[i][0], moves[i][1], 2.5])
+                elif moves[i - 1][2] == 2:
+                    possible_moves.append([moves[i][0], moves[i][1], 1.5])
+            elif moves[i][2] == 2:
+                if moves[i - 1][2] == 3:
+                    possible_moves.append([moves[i][0], moves[i][1], 1.5])
+                elif moves[i - 1][2] == 2:
+                    possible_moves.append([moves[i][0], moves[i][1], 1.5])
+            else:
+                if moves[i] not in possible_moves:
+                    possible_moves.append(moves[i])
+        else:
+            if moves[i] not in possible_moves:
+                possible_moves.append(moves[i])
+    
+    return possible_moves
+
+
 def find_best_move_value(grid, size, player_symbol, computer_symbol):
     # Calls find_move_value, then loops through the list and finds the best value
     moves = find_move_value(grid, size, player_symbol, computer_symbol)
-    for item in moves:
-        item.pop(3)
+
+    moves = find_forks(moves)
 
     value = float("inf")
     for move in moves:
@@ -248,20 +274,23 @@ def get_move(best_value, possible_moves):
 '''
 Tests :)
 '''
+if __name__ == "__main__":
+    gamegrid, size = create_grid(10)
+    place_symbol(gamegrid, "X", [3, 3])
+    place_symbol(gamegrid, "X", [2, 5])
+    place_symbol(gamegrid, "X", [4, 4])
+    place_symbol(gamegrid, "X", [4, 5])
 
-gamegrid, size = create_grid(10)
-place_symbol(gamegrid, "X", [3, 3])
-place_symbol(gamegrid, "X", [2, 5])
-place_symbol(gamegrid, "X", [4, 4])
-place_symbol(gamegrid, "X", [4, 5])
-
-place_symbol(gamegrid, "O", [3, 6])
-place_symbol(gamegrid, "O", [2, 6])
-place_symbol(gamegrid, "O", [2, 7])
-# # x, y = find_best_move_value(gamegrid, size, "X", "O")
-# # arr = get_move(x, y)
-# # place_symbol(gamegrid, "O", arr)
+    place_symbol(gamegrid, "O", [3, 6])
+    place_symbol(gamegrid, "O", [2, 6])
+    place_symbol(gamegrid, "O", [2, 7])
+    # # x, y = find_best_move_value(gamegrid, size, "X", "O")
+    # # arr = get_move(x, y)
+    # # place_symbol(gamegrid, "O", arr)
 
 
-load_grid(gamegrid, size)
-print(find_best_move_value(gamegrid, size, "O", "X"))
+    load_grid(gamegrid, size)
+    print(find_best_move_value(gamegrid, size, "O", "X"))
+    # moves = find_move_value(gamegrid, size, "O", "X")
+    # # print(moves)
+    # print(find_forks(moves))
