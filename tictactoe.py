@@ -57,11 +57,14 @@ while True:
     boolean, player_value, player_moves = need_to_block(gamegrid, size, "O", "X")
     computer_value, computer_moves = find_best_move_value(gamegrid, size, "X", "O")
     if boolean:
-        arr = get_move(player_value, player_moves)
+        if computer_value <= player_value:
+            arr = get_move(computer_value, computer_moves)
+        else:
+            arr = get_move(player_value, player_moves)
     else:
         arr = get_move(computer_value, computer_moves)
     
-    print(f"Bot vybral: {arr}")
+    print(f"Pepek has chosen: {arr}, player value {player_value}, computer value {computer_value}")
     place_symbol(gamegrid, "O", arr)
     load_grid(gamegrid, size)
 
