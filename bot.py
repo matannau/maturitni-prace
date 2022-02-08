@@ -48,6 +48,13 @@ def check_if_empty(i, j, size, grid):
     return False
 
 
+def check_if_computer(i, j, size, grid, computer_symbol):
+    # Checks if grid[i][j] is in the grid and computer's symbol is there
+    if i >= 0 and j >= 0 and i < size and j < size and grid[i][j] == [computer_symbol]:
+        return True
+    return False
+
+
 def find_all_empty_spots(grid, size):
     # Creates a list of all spots with no symbols
     empty_spots = []
@@ -111,7 +118,7 @@ def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
                 elif check_if_empty(i + y, j + x, size, grid):
                     if check_spaces(i + 2*y, j + 2*x, size, grid, player_symbol) and check_spaces(i - 2*y, j - 2*x, size, grid, player_symbol):
                         move = check_potential_development(
-                            i, j, size, grid, player_symbol, y, x)
+                            i, j, size, grid, player_symbol, computer_symbol, y, x)
                         if move not in possible_move:
                             possible_move.append(move)
 
@@ -190,7 +197,7 @@ def get_direction(i, j):
         return 4
 
 
-def check_potential_development(i, j, size, grid, player_symbol, y, x):
+def check_potential_development(i, j, size, grid, player_symbol, computer_symbol, y, x):
     # Checks 4 spots next to grid[i, j] in selected direction and then
     # counts the value od grid[i, j] based on it
     #
@@ -205,6 +212,9 @@ def check_potential_development(i, j, size, grid, player_symbol, y, x):
     
     if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
         value += 10
+    
+    if check_if_computer(i + 3*y, j + 3*x, size, grid, computer_symbol):
+        value -= 1
     
 
     move = [i + y, j + x, value, get_direction(y, x)]
@@ -276,9 +286,9 @@ Tests :)
 if __name__ == "__main__":
     gamegrid, size = create_grid(10)
     place_symbol(gamegrid, "X", [3, 4])
-    place_symbol(gamegrid, "X", [5, 4])
-    place_symbol(gamegrid, "X", [4, 6])
-    place_symbol(gamegrid, "X", [4, 5])
+    place_symbol(gamegrid, "X", [3, 3])
+    place_symbol(gamegrid, "X", [3, 6])
+    place_symbol(gamegrid, "X", [3, 7])
 
     place_symbol(gamegrid, "O", [2, 4])
 
