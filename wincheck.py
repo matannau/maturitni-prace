@@ -98,3 +98,19 @@ def check_diagonals(i, j, symbol, grid, size):
     if i < size - 4 and j < size - 4:
         if check_right_down(i, j, symbol, grid) == True:
             return True
+
+
+def check_win(grid, size):
+    for i in range(size):
+        for j in range(size):
+            if grid[i][j] == ["X"]:
+                if check_lines(i, j, "X", grid, size) == True:
+                    return 1
+                if check_diagonals(i, j, "X", grid, size) == True:
+                    return 1
+            if grid[i][j] == ["O"]:
+                if check_lines(i, j, "O", grid, size) == True:
+                    return 0
+                if check_diagonals(i, j, "O", grid, size) == True:
+                    return 0
+    return True

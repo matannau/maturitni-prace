@@ -287,8 +287,8 @@ if __name__ == "__main__":
     gamegrid, size = create_grid(10)
     place_symbol(gamegrid, "X", [3, 4])
     place_symbol(gamegrid, "X", [3, 3])
-    place_symbol(gamegrid, "X", [3, 6])
-    place_symbol(gamegrid, "X", [3, 7])
+    place_symbol(gamegrid, "X", [5, 6])
+    place_symbol(gamegrid, "X", [4, 6])
 
     place_symbol(gamegrid, "O", [2, 4])
 
