@@ -1,58 +1,59 @@
-from wincheck import check_lines, check_diagonals
+import pygame
+import sys
+import math
+from gui_func import create_points_horizontal, create_points_vertical, load_grid, place_symbol
 from bot import find_best_move_value, get_move, find_primary_value, need_to_block
 from grid import create_grid
+from wincheck import check_win
 
-def load_grid(grid, size):
-    print("    0    1    2    3    4    5    6    7    8    9")
-    for i in range(size):
-        for j in range(size):
-            if j == 0:
-                print(i, grid[i][j], end="")
-            elif j == size - 1:
-                print(grid[i][j])
-            else:
-                print(grid[i][j], end="")
+pygame.init()
 
-    print("\n")
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
-def check_win(grid, size):
-    for i in range(size):
-        for j in range(size):
-            if grid[i][j] == ["X"]:
-                if check_lines(i, j, "X", grid, size) == True:
-                    return "X has won"
-                if check_diagonals(i, j, "X", grid, size) == True:
-                    return "X has won"
-            if grid[i][j] == ["O"]:
-                if check_lines(i, j, "O", grid, size) == True:
-                    return "O has won"
-                if check_diagonals(i, j, "O", grid, size) == True:
-                    return "O has won"
-    return "No one has won"
+LINE_WIDTH = 1
 
-def place_symbol(grid, symbol, coordinates):
-    if grid[coordinates[0]][coordinates[1]] == ["_"]:
-        grid[coordinates[0]][coordinates[1]] = [symbol]
-        return True
-    else:
-        print("You can not chose this spot\n")
-        return False
+WINDOW_WIDTH = 700
+WINDOW_HEIGHT = 700
+SURFACE = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+SURFACE.fill(WHITE)
+pygame.display.set_caption("Tic-tac-toe")
+
+start1, end1 = create_points_vertical(WINDOW_WIDTH, WINDOW_HEIGHT)
+start2, end2 = create_points_horizontal(WINDOW_WIDTH, WINDOW_HEIGHT)
+
+for i in range(9):
+    pygame.draw.line(SURFACE, BLACK, start1[i], end1[i], LINE_WIDTH)
+    pygame.draw.line(SURFACE, BLACK, start2[i], end2[i], LINE_WIDTH)
+
+font = pygame.font.SysFont("calibri", 64)
+
+FPS = 5
+clock = pygame.time.Clock()
 
 gamegrid, size = create_grid(10)
-l = int(input("Enter y coordinate: "))
-m = int(input("Enter x coordinate: "))
-place_symbol(gamegrid, "X", [l, m])
+place_symbol(gamegrid, "X", [3, 3])
 x, y = find_primary_value(gamegrid, size, "X")
 arr = get_move(x, y)
 place_symbol(gamegrid, "O", arr)
-load_grid(gamegrid, size)
 
-while True:
-    while True:
-        l = int(input("Enter y coordinate: "))
-        m = int(input("Enter x coordinate: "))
-        if place_symbol(gamegrid, "X", [l, m]):
-            break
+pygame.display.update()
+
+running = True
+while running:
+    players_move = True
+    while players_move:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                x, y = math.floor(x/(WINDOW_WIDTH/size)), math.floor(y/(WINDOW_HEIGHT/size))
+                if place_symbol(gamegrid, "X", (y, x)):
+                    players_move = False
+        
+        clock.tick(FPS)
     
     boolean, player_value, player_moves = need_to_block(gamegrid, size, "O", "X")
     computer_value, computer_moves = find_best_move_value(gamegrid, size, "X", "O")
@@ -63,15 +64,34 @@ while True:
             arr = get_move(player_value, player_moves)
     else:
         arr = get_move(computer_value, computer_moves)
-    
-    print(f"Pepek has chosen: {arr}, player value {player_value}, computer value {computer_value}")
+
     place_symbol(gamegrid, "O", arr)
+
     load_grid(gamegrid, size)
+    
+    pygame.display.update()
 
-    if check_win(gamegrid, size) != "No one has won":
-        break
+    if not check_win(gamegrid, size):
+        running = False
 
+symbol = check_win(gamegrid, size)
+if symbol == 1:
+    symbol = "X"
+else:
+    symbol = "O"
+win_text = font.render(f"{symbol} has won", True, WHITE, BLACK)
+win_text_rect = win_text.get_rect()
+win_text_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-load_grid(gamegrid, size)
-print(check_win(gamegrid, size))
+    SURFACE.blit(win_text, win_text_rect)
+
+    pygame.display.update()
+
+    clock.tick(5)
+
