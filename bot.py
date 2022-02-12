@@ -212,8 +212,12 @@ def check_potential_development(i, j, size, grid, player_symbol, computer_symbol
     
     if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
         value += 10
+    if not check_spaces(i - 3*y, j - 3*x, size, grid, player_symbol):
+        value += 10
     
     if check_if_computer(i + 3*y, j + 3*x, size, grid, computer_symbol):
+        value -= 1
+    if check_if_computer(i - 3*y, j - 3*x, size, grid, computer_symbol):
         value -= 1
     
 

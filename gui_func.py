@@ -1,25 +1,25 @@
-def create_points_vertical(WIDTH, HEIGHT):
+def create_points_vertical(size, spots):
     start_points = []
     end_points = []
     x = 0
-    y = WIDTH / 10
-    for _ in range(9):
+    y = size / spots
+    for _ in range(spots - 1):
         x += y
         start_points.append((x, 0))
-        end_points.append((x, HEIGHT))
+        end_points.append((x, size))
 
     return start_points, end_points
 
 
-def create_points_horizontal(WIDTH, HEIGHT):
+def create_points_horizontal(size, spots):
     start_points = []
     end_points = []
     x = 0
-    y = HEIGHT / 10
-    for _ in range(9):
+    y = size / spots
+    for _ in range(spots - 1):
         x += y
         start_points.append((0, x))
-        end_points.append((WIDTH, x))
+        end_points.append((size, x))
 
     return start_points, end_points
 
