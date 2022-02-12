@@ -12,23 +12,24 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+GREY = (192, 192, 192)
 
 LINE_WIDTH = 1
 
-WINDOW_SIZE = 200
+WINDOW_SIZE = 400
 SURFACE = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
 SURFACE.fill(WHITE)
 pygame.display.set_caption("Tic-tac-toe")
 
-gamegrid, size = create_grid(10)
+gamegrid, size = create_grid(15)
 diameter = WINDOW_SIZE/size
 
-start1, end1 = create_points_vertical(WINDOW_SIZE)
-start2, end2 = create_points_horizontal(WINDOW_SIZE)
+start1, end1 = create_points_vertical(WINDOW_SIZE, size)
+start2, end2 = create_points_horizontal(WINDOW_SIZE, size)
 
-for i in range(9):
-    pygame.draw.line(SURFACE, BLACK, start1[i], end1[i], LINE_WIDTH)
-    pygame.draw.line(SURFACE, BLACK, start2[i], end2[i], LINE_WIDTH)
+for i in range(size - 1):
+    pygame.draw.line(SURFACE, GREY, start1[i], end1[i], LINE_WIDTH)
+    pygame.draw.line(SURFACE, GREY, start2[i], end2[i], LINE_WIDTH)
 
 font = pygame.font.SysFont("calibri", int(WINDOW_SIZE/9))
 
@@ -45,20 +46,24 @@ cross_image_rect = cross_image.get_rect()
 FPS = 5
 clock = pygame.time.Clock()
 
-computers_turn = False
-not_computers_turn = True
+computers_turn = True
+not_computers_turn = False
+win = False
+
+player = "O"
+computer = "X"
 
 # Main game loop
 running = True
 while running:
     if computers_turn:
-        x, y = find_primary_value(gamegrid, size, "X")
+        x, y = find_primary_value(gamegrid, size, player)
         arr = get_move(x, y)
 
-        place_symbol(gamegrid, "O", arr)
+        place_symbol(gamegrid, computer, arr)
 
-        center = (diameter * (x + 1) - diameter/2,
-                  diameter * (y + 1) - diameter/2)
+        center = (diameter * (arr[1] + 1) - diameter/2,
+                  diameter * (arr[0] + 1) - diameter/2)
         cross_image_rect.center = center
         SURFACE.blit(cross_image, cross_image_rect)
 
@@ -76,43 +81,57 @@ while running:
                 x, y = pygame.mouse.get_pos()
                 x, y = math.floor(x/(WINDOW_SIZE/size)
                                   ), math.floor(y/(WINDOW_SIZE/size))
-                if place_symbol(gamegrid, "X", (y, x)):
+                if place_symbol(gamegrid, player, (y, x)):
                     players_turn = False
                     center = (diameter * (x + 1) - diameter/2,
                               diameter * (y + 1) - diameter/2)
-                    # pygame.draw.circle(SURFACE, RED, center, diameter/2 - diameter/10)
-                    # pygame.draw.circle(SURFACE, WHITE, center, diameter/4)
 
                     circle_image_rect.center = center
                     SURFACE.blit(circle_image, circle_image_rect)
 
+                    if check_win(gamegrid, size):
+                        win = True
+
         clock.tick(FPS)
+    
+
     if not_computers_turn:
-        x, y = find_primary_value(gamegrid, size, "X")
+        x, y = find_primary_value(gamegrid, size, player)
         arr = get_move(x, y)
-        place_symbol(gamegrid, "O", arr)
+        place_symbol(gamegrid, computer, arr)
+
+        center = (diameter * (arr[1] + 1) - diameter/2,
+                  diameter * (arr[0] + 1) - diameter/2)
+        cross_image_rect.center = center
+        SURFACE.blit(cross_image, cross_image_rect)
+
         not_computers_turn = False
 
     else:
-        boolean, player_value, player_moves = need_to_block(
-            gamegrid, size, "O", "X")
-        computer_value, computer_moves = find_best_move_value(
-            gamegrid, size, "X", "O")
-        if boolean:
-            if computer_value <= player_value:
-                arr = get_move(computer_value, computer_moves)
+        if not win:
+            boolean, player_value, player_moves = need_to_block(
+                gamegrid, size, computer, player)
+            computer_value, computer_moves = find_best_move_value(
+                gamegrid, size, player, computer)
+            if boolean:
+                if computer_value <= player_value:
+                    arr = get_move(computer_value, computer_moves)
+                else:
+                    arr = get_move(player_value, player_moves)
             else:
-                arr = get_move(player_value, player_moves)
-        else:
-            arr = get_move(computer_value, computer_moves)
+                arr = get_move(computer_value, computer_moves)
 
-    place_symbol(gamegrid, "O", arr)
+            print(f"player: {player_value}, computer: {computer_value}")
+            print(f"Computer has chosen: {arr}")
 
-    load_grid(gamegrid, size)
+            place_symbol(gamegrid, computer, arr)
+
+            center = (diameter * (arr[1] + 1) - diameter/2,
+                    diameter * (arr[0] + 1) - diameter/2)
+            cross_image_rect.center = center
+            SURFACE.blit(cross_image, cross_image_rect)
 
     pygame.display.update()
-
-    print(check_win(gamegrid, size))
 
     if check_win(gamegrid, size):
         symbol = check_win(gamegrid, size)
