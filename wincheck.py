@@ -1,116 +1,53 @@
-def check_down(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i + x][j] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
+from bot import check_if_computer
+from gui_func import load_grid
+
+# gamegrid = [
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["O"], ["O"], ["O"], ["O"], ["O"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+# [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
+# ]
+# size = 10
+
+def find_4_symbols(i, j, grid, symbol, y, x):
+    for num in range(1, 5):
+        if grid[i + num*y][j + num*x] != [symbol]:
+            return False
+
+    return True
 
 
-def check_up(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i - x][j] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
+def loop_increment(i, j, size, grid, symbol):
+    for y in range(-1, 2):
+        for x in range(-1, 2):
+            if not (x == y == 0):
+                if check_if_computer(i + 4*y, j + 4*x, size, grid, symbol):
+                    if find_4_symbols(i, j, grid, symbol, y, x):
+                        return True
 
 
-def check_left(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i][j - x] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
-
-
-def check_right(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i][j + x] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
-
-
-def check_left_up(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i - x][j - x] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
-
-
-def check_left_down(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i + x][j - x] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
-
-
-def check_right_up(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i - x][j + x] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
-
-
-def check_right_down(i, j, symbol, grid):
-    total = 0
-    for x in range(5):
-        if grid[i + x][j + x] == [symbol]:
-            total += 1
-    if total == 5:
-        return True
-
-
-def check_lines(i, j, symbol, grid, size):
-    if i < size - 4:
-        if check_down(i, j, symbol, grid) == True:
-            return True
-    if i > size - 7:
-        if check_up(i, j, symbol, grid) == True:
-            return True
-    if j < size - 4:
-        if check_right(i, j, symbol, grid) == True:
-            return True
-    if j > size - 7:
-        if check_left(i, j, symbol, grid) == True:
-            return True
-
-
-def check_diagonals(i, j, symbol, grid, size):
-    if i > size - 7 and j > size - 7:
-        if check_left_up(i, j, symbol, grid) == True:
-            return True
-    if i < size - 4 and j > size - 7:
-        if check_left_down(i, j, symbol, grid) == True:
-            return True
-    if i > size - 7 and j < size - 4:
-        if check_right_up(i, j, symbol, grid) == True:
-            return True
-    if i < size - 4 and j < size - 4:
-        if check_right_down(i, j, symbol, grid) == True:
-            return True
+def loop_spots(size, grid, symbol):
+    for i in range(size):
+        for j in range(size):
+            if grid[i][j] == [symbol]:
+                if loop_increment(i, j, size, grid, symbol):
+                    return True
+    return False
 
 
 def check_win(grid, size):
-    for i in range(size):
-        for j in range(size):
-            if grid[i][j] == ["X"]:
-                if check_lines(i, j, "X", grid, size) == True:
-                    return 1
-                if check_diagonals(i, j, "X", grid, size) == True:
-                    return 1
-            if grid[i][j] == ["O"]:
-                if check_lines(i, j, "O", grid, size) == True:
-                    return 0
-                if check_diagonals(i, j, "O", grid, size) == True:
-                    return 0
-    return True
+    if loop_spots(size, grid, "X"):
+        return 1
+    if loop_spots(size, grid, "O"):
+        return 2
+
+    return False
+
+# load_grid(gamegrid, size)
+# print(check_win(gamegrid, size))
