@@ -1,10 +1,10 @@
 import pygame
 import sys
 import math
-from gui_func import create_points_horizontal, create_points_vertical, load_grid, place_symbol
-from bot import find_best_move_value, get_move, find_primary_value, need_to_block
-from grid import create_grid
-from wincheck import check_win
+from src.gui_func import create_points_horizontal, create_points_vertical, load_grid, place_symbol
+from src.bot import find_best_move_value, get_move, find_primary_value, need_to_block
+from src.grid import create_grid
+from src.wincheck import check_win
 
 pygame.init()
 
