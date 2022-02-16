@@ -1,5 +1,6 @@
 from unittest import main
-from src.wincheck import check_win
 
-print("Poustim soubory z test.py!")
-main(module="tests.test_wincheck", verbosity=3, exit=False)
+print("********* Tests from test_wincheck.py *********\n")
+main(module="tests.test_wincheck", verbosity=2, exit=False)
+print("********* Tests from test_bot.py *********\n")
+main(module="tests.test_bot", verbosity=2, exit=False)

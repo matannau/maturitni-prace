@@ -100,6 +100,8 @@ def find_a_3(i, j, size, grid, player_symbol, computer_symbol, y, x):
 
 
 def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
+    # For the given spot it tries to find fours, then threes and then if the
+    # direction is convenient for playing in every possible direction
     possible_move = []
     for y in range(-1, 2):
         for x in range(-1, 2):
@@ -165,7 +167,8 @@ def find_forks(moves):
 
 
 def find_best_move_value(grid, size, player_symbol, computer_symbol):
-    # Calls find_move_value, then loops through the list and finds the best value
+    # Creates a list of coordinates with its values and then loops through
+    # them to find the best one
     moves = find_move_value(grid, size, player_symbol, computer_symbol)
 
     moves = find_forks(moves)
@@ -211,9 +214,9 @@ def check_potential_development(i, j, size, grid, player_symbol, computer_symbol
             value += 10
     
     if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
-        value += 10
+        value += 1
     if not check_spaces(i - 3*y, j - 3*x, size, grid, player_symbol):
-        value += 10
+        value += 1
     
     if check_if_computer(i + 3*y, j + 3*x, size, grid, computer_symbol):
         value -= 1
@@ -263,6 +266,8 @@ def find_move_value(grid, size, player_symbol, computer_symbol):
 
 
 def need_to_block(grid, size, computer_symbol, player_symbol):
+    # Calls find_best_move_value on the other symbol and if
+    # the value of it is less than 3, returns True
     value, moves = find_best_move_value(
         grid, size, computer_symbol, player_symbol)
 
@@ -288,23 +293,4 @@ def get_move(best_value, possible_moves):
 Tests :)
 '''
 if __name__ == "__main__":
-    gamegrid, size = create_grid(10)
-    place_symbol(gamegrid, "X", [3, 4])
-    place_symbol(gamegrid, "X", [3, 3])
-    place_symbol(gamegrid, "X", [5, 6])
-    place_symbol(gamegrid, "X", [4, 6])
-
-    place_symbol(gamegrid, "O", [2, 4])
-
-    # # x, y = find_best_move_value(gamegrid, size, "X", "O")
-    # # arr = get_move(x, y)
-    # # place_symbol(gamegrid, "O", arr)
-
-    load_grid(gamegrid, size)
-    print(sorted(find_move_value(gamegrid, size, "O", "X")))
-    print(find_best_move_value(gamegrid, size, "O", "X"))
-    print(need_to_block(gamegrid, size, "O", "X"))
-    # print(loop_increment_basic(8, 1, size, gamegrid, "X", "O"))
-    # moves = find_move_value(gamegrid, size, "O", "X")
-    # # print(moves)
-    # print(find_forks(moves))
+    pass
