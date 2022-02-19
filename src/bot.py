@@ -1,4 +1,6 @@
 import random
+import copy
+from wincheck import check_win
 
 
 def create_grid(size):
@@ -212,17 +214,17 @@ def check_potential_development(i, j, size, grid, player_symbol, computer_symbol
             value += 1
         elif space == [player_symbol]:
             value += 10
-    
-    if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
-        value += 1
-    if not check_spaces(i - 3*y, j - 3*x, size, grid, player_symbol):
-        value += 1
-    
+
+    if value > 1:
+        if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
+            value += 1
+        if not check_spaces(i - 3*y, j - 3*x, size, grid, player_symbol):
+            value += 1
+
     if check_if_computer(i + 3*y, j + 3*x, size, grid, computer_symbol):
         value -= 1
     if check_if_computer(i - 3*y, j - 3*x, size, grid, computer_symbol):
         value -= 1
-    
 
     move = [i + y, j + x, value, get_direction(y, x)]
     return move
@@ -277,14 +279,81 @@ def need_to_block(grid, size, computer_symbol, player_symbol):
         return False, [], []
 
 
-def get_move(best_value, possible_moves):
-    # Selects all best moves based on the best value and then
-    # chooses one randomly
+def filter_moves(best_value, possible_moves):
+    # Creates a list of the best moves (moves with the least value)
     best_moves = []
     x = len(possible_moves)
     for i in range(x):
         if possible_moves[i][2] == best_value:
             best_moves.append(possible_moves[i])
+
+    return best_moves
+
+
+def make_a_move(grid, size, player_symbol, computer_symbol):
+    value, moves = find_best_move_value(
+        grid, size, player_symbol, computer_symbol)
+    block, value2, moves2 = need_to_block(
+        grid, size, computer_symbol, player_symbol)
+    if block:
+        if value2 <= value:
+            arr = get_move(value2, moves2)
+        else:
+            arr = get_move(value, moves)
+    else:
+        arr = get_move(value, moves)
+    place_symbol(grid, computer_symbol, arr)
+
+    load_grid(grid, size)
+
+    return arr
+
+
+def prediction(grid, size, player_symbol, computer_symbol):
+    value, moves = find_best_move_value(
+        grid, size, player_symbol, computer_symbol)
+    print(moves)
+    moves = filter_moves(value, moves)
+    win_in = []
+
+    for item in moves:
+        grid2 = copy.deepcopy(grid)
+        place_symbol(grid2, "X", item)
+
+        x = 0  # Number of moves in which player wins
+        y = 1  # NUmber of moves in which computer wins
+        first_player_move = []
+        won = False
+        while not won:
+            if x > 40 or y > 20:
+                x, y = float("inf"), float("inf")
+                break
+            else:
+                coordinates = make_a_move(
+                    grid2, size, computer_symbol, player_symbol)
+                if x == 0:
+                    first_player_move = coordinates
+                if check_win(grid2, size):
+                    won = True
+                    print("Hrac vyhral")
+                    break
+                x += 1
+
+                make_a_move(grid2, size, player_symbol, computer_symbol)
+                if check_win(grid2, size):
+                    print("Pocitac vyhral")
+                    won = True
+                    break
+                y += 1
+
+        win_in.append([item, first_player_move, x, y])
+
+    return win_in
+
+
+def get_move(best_value, possible_moves):
+    # Chooses randomly one of the best moves
+    best_moves = filter_moves(best_value, possible_moves)
 
     return random.choice(best_moves)
 
@@ -293,4 +362,16 @@ def get_move(best_value, possible_moves):
 Tests :)
 '''
 if __name__ == "__main__":
-    pass
+    gamegrid, size = [
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["X"], ["O"], ["_"], ["_"], ["O"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["O"], ["_"], ["O"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["X"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
+    ], 10
+    print(prediction(gamegrid, size, "O", "X"))
