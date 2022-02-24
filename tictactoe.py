@@ -33,11 +33,11 @@ for i in range(size - 1):
 
 font = pygame.font.SysFont("calibri", int(WINDOW_SIZE/9))
 
-circle_image = pygame.image.load("images/circle.png")
+circle_image = pygame.image.load("resources/images/circle.png")
 circle_image = pygame.transform.scale(
     circle_image, (diameter - diameter/10, diameter - diameter/10))
 circle_image_rect = circle_image.get_rect()
-cross_image = pygame.image.load("images/cross.png")
+cross_image = pygame.image.load("resources/images/cross.png")
 cross_image = pygame.transform.scale(
     cross_image, (diameter - diameter/10, diameter - diameter/10))
 cross_image_rect = cross_image.get_rect()
@@ -52,6 +52,7 @@ win = False
 
 player = "O"
 computer = "X"
+difficulty = 3
 
 # Main game loop
 running = True
@@ -110,9 +111,9 @@ while running:
     else:
         if not win:
             boolean, player_value, player_moves = need_to_block(
-                gamegrid, size, computer, player)
+                gamegrid, size, computer, player, difficulty)
             computer_value, computer_moves = find_best_move_value(
-                gamegrid, size, player, computer)
+                gamegrid, size, player, computer, difficulty)
             if boolean:
                 if computer_value <= player_value:
                     arr = get_move(computer_value, computer_moves)

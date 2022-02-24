@@ -1,6 +1,5 @@
 import random
 import copy
-from wincheck import check_win
 
 
 def create_grid(size):
@@ -69,7 +68,7 @@ def find_all_empty_spots(grid, size):
 
 
 def find_a_4(i, j, size, grid, computer_symbol, y, x):
-    # Checks for fours and then returns winning move
+    # Checks for fours and if there is one, it returns the winning move
     value = 0
     if check_if_empty(i + 4*y, j + 4*x, size, grid):
         for num in range(1, 4):
@@ -168,12 +167,13 @@ def find_forks(moves):
     return possible_moves
 
 
-def find_best_move_value(grid, size, player_symbol, computer_symbol):
+def find_best_move_value(grid, size, player_symbol, computer_symbol, difficulty):
     # Creates a list of coordinates with its values and then loops through
     # them to find the best one
     moves = find_move_value(grid, size, player_symbol, computer_symbol)
 
-    moves = find_forks(moves)
+    if difficulty == 3:
+        moves = find_forks(moves)
 
     value = float("inf")
     for move in moves:
@@ -203,8 +203,8 @@ def get_direction(i, j):
 
 
 def check_potential_development(i, j, size, grid, player_symbol, computer_symbol, y, x):
-    # Checks 4 spots next to grid[i, j] in selected direction and then
-    # counts the value od grid[i, j] based on it
+    # Checks 4 spots next to grid[i + y, j + x] in selected direction and then
+    # counts the value od grid[i + y, j + x] based on it
     #
     # y -> i, x -> j
     value = 0
@@ -267,11 +267,11 @@ def find_move_value(grid, size, player_symbol, computer_symbol):
     return possible_moves
 
 
-def need_to_block(grid, size, computer_symbol, player_symbol):
-    # Calls find_best_move_value on the other symbol and if
-    # the value of it is less than 3, returns True
+def need_to_block(grid, size, computer_symbol, player_symbol, difficulty):
+    # Counts values of spots that can be chosen by the player.
+    # If the value is less than 3, it needs to be blocked (it's a winning move)
     value, moves = find_best_move_value(
-        grid, size, computer_symbol, player_symbol)
+        grid, size, computer_symbol, player_symbol, difficulty)
 
     if value < 3:
         return True, value, moves
@@ -304,51 +304,13 @@ def make_a_move(grid, size, player_symbol, computer_symbol):
         arr = get_move(value, moves)
     place_symbol(grid, computer_symbol, arr)
 
-    load_grid(grid, size)
 
     return arr
 
 
 def prediction(grid, size, player_symbol, computer_symbol):
-    value, moves = find_best_move_value(
-        grid, size, player_symbol, computer_symbol)
-    print(moves)
-    moves = filter_moves(value, moves)
-    win_in = []
+    pass
 
-    for item in moves:
-        grid2 = copy.deepcopy(grid)
-        place_symbol(grid2, "X", item)
-
-        x = 0  # Number of moves in which player wins
-        y = 1  # NUmber of moves in which computer wins
-        first_player_move = []
-        won = False
-        while not won:
-            if x > 40 or y > 20:
-                x, y = float("inf"), float("inf")
-                break
-            else:
-                coordinates = make_a_move(
-                    grid2, size, computer_symbol, player_symbol)
-                if x == 0:
-                    first_player_move = coordinates
-                if check_win(grid2, size):
-                    won = True
-                    print("Hrac vyhral")
-                    break
-                x += 1
-
-                make_a_move(grid2, size, player_symbol, computer_symbol)
-                if check_win(grid2, size):
-                    print("Pocitac vyhral")
-                    won = True
-                    break
-                y += 1
-
-        win_in.append([item, first_player_move, x, y])
-
-    return win_in
 
 
 def get_move(best_value, possible_moves):
@@ -368,10 +330,9 @@ if __name__ == "__main__":
         [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
         [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
         [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["X"], ["O"], ["_"], ["_"], ["O"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["O"], ["_"], ["O"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["X"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["X"], ["_"], ["_"], ["O"], ["O"], ["_"], ["T"], ["_"], ["_"]],
         [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["_"], ["O"], ["_"], ["_"], ["_"], ["_"]],
+        [["_"], ["_"], ["_"], ["_"], ["O"], ["_"], ["_"], ["_"], ["_"], ["_"]],
         [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
     ], 10
-    print(prediction(gamegrid, size, "O", "X"))

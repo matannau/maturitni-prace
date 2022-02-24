@@ -1,10 +1,5 @@
-# from bot import check_if_computer
+from . bot import check_if_computer
 
-def check_if_computer(i, j, size, grid, computer_symbol):
-    # Checks if grid[i][j] is in the grid and computer's symbol is there
-    if i >= 0 and j >= 0 and i < size and j < size and grid[i][j] == [computer_symbol]:
-        return True
-    return False
 
 def find_4_symbols(i, j, grid, symbol, y, x):
     for num in range(1, 5):
