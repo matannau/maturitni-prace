@@ -29,8 +29,8 @@ def loop_spots(size, grid, symbol):
 
 def check_win(grid, size):
     if loop_spots(size, grid, "X"):
-        return 1
+        return "X"
     if loop_spots(size, grid, "O"):
-        return 2
+        return "O"
 
     return False

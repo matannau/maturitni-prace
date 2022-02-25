@@ -167,7 +167,7 @@ def find_forks(moves):
     return possible_moves
 
 
-def find_best_move_value(grid, size, player_symbol, computer_symbol, difficulty):
+def find_best_move_value(grid, size, player_symbol, computer_symbol, difficulty=3):
     # Creates a list of coordinates with its values and then loops through
     # them to find the best one
     moves = find_move_value(grid, size, player_symbol, computer_symbol)

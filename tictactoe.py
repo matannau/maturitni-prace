@@ -10,8 +10,6 @@ pygame.init()
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
 GREY = (192, 192, 192)
 
 LINE_WIDTH = 1
@@ -136,10 +134,6 @@ while running:
 
     if check_win(gamegrid, size):
         symbol = check_win(gamegrid, size)
-        if symbol == 1:
-            symbol = "X"
-        else:
-            symbol = "O"
         win_text = font.render(f"{symbol} has won", True, WHITE, BLACK)
         win_text_rect = win_text.get_rect()
         win_text_rect.center = (WINDOW_SIZE//2, WINDOW_SIZE//2)

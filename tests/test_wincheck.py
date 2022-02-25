@@ -17,7 +17,7 @@ class TestWin(unittest.TestCase):
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
             ], 10
-        self.assertEqual(check_win(gamegrid, size), 1)
+        self.assertEqual(check_win(gamegrid, size), "X")
         gamegrid, size = [
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
@@ -30,7 +30,7 @@ class TestWin(unittest.TestCase):
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
             ], 10
-        self.assertEqual(check_win(gamegrid, size), 1)
+        self.assertEqual(check_win(gamegrid, size), "X")
         gamegrid, size = [
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
@@ -43,7 +43,7 @@ class TestWin(unittest.TestCase):
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
             ], 10
-        self.assertEqual(check_win(gamegrid, size), 1)
+        self.assertEqual(check_win(gamegrid, size), "X")
 
 
     def test_win_o(self):
@@ -59,7 +59,7 @@ class TestWin(unittest.TestCase):
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
             ], 10
-        self.assertEqual(check_win(gamegrid, size), 2)
+        self.assertEqual(check_win(gamegrid, size), "O")
         gamegrid, size = [
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
@@ -72,7 +72,7 @@ class TestWin(unittest.TestCase):
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
             ], 10
-        self.assertEqual(check_win(gamegrid, size), 2)
+        self.assertEqual(check_win(gamegrid, size), "O")
         gamegrid, size = [
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
@@ -85,7 +85,7 @@ class TestWin(unittest.TestCase):
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
             [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
             ], 10
-        self.assertEqual(check_win(gamegrid, size), 2)
+        self.assertEqual(check_win(gamegrid, size), "O")
     
 class TestNotWin(unittest.TestCase):
     def test_win_cross(self):
