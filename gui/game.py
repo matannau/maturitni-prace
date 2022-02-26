@@ -8,16 +8,16 @@ from src.grid import create_grid
 from src.wincheck import check_win
 
 
-cross_image = pygame.image.load("resources/images/cross.png")
-circle_image = pygame.image.load("resources/images/circle.png")
-win_cross_image = pygame.image.load("resources/images/win_cross.png")
-win_circle_image = pygame.image.load("resources/images/win_circle.png")
-chosen_cross_image = pygame.image.load("resources/images/chosen_cross.png")
-chosen_circle_image = pygame.image.load("resources/images/chosen_circle.png")
-playagain_image = pygame.image.load("resources/images/playagain.png")
-mainmenu_image = pygame.image.load("resources/images/mainmenu.png")
-hover_playagain_image = pygame.image.load("resources/images/hover_playagain.png")
-hover_mainmenu_image = pygame.image.load("resources/images/hover_mainmenu.png")
+CROSS_IMAGE = pygame.image.load("resources/images/cross.png")
+CIRCLE_IMAGE = pygame.image.load("resources/images/circle.png")
+WIN_CROSS_IMAGE = pygame.image.load("resources/images/WIN_Cross.png")
+WIN_CIRCLE_IMAGE = pygame.image.load("resources/images/WIN_Circle.png")
+CHOSEN_CROSS_IMAGE = pygame.image.load("resources/images/chosen_cross.png")
+CHOSEN_CIRCLE_IMAGE = pygame.image.load("resources/images/chosen_circle.png")
+PLAYAGAIN_IMAGE = pygame.image.load("resources/images/playagain.png")
+MAINMENU_IMAGE = pygame.image.load("resources/images/mainmenu.png")
+HOVER_PLAYAGAIN_IMAGE = pygame.image.load("resources/images/hover_playagain.png")
+HOVER_MAINMENU_IMAGE = pygame.image.load("resources/images/hover_mainmenu.png")
 
 class Game():
     def __init__(self):
@@ -26,12 +26,12 @@ class Game():
         self.WHITE = (255, 255, 255)
         self.GREY = (192, 192, 192)
         self.BLACK = (0, 0, 0)
-        self.WINDOW_SIZE = 700
+        self.WINDOW_SIZE = 500
         self.SURFACE = pygame.display.set_mode((self.WINDOW_SIZE, self.WINDOW_SIZE))
         self.gamegrid, self.size = create_grid(15)
         self.FPS = 30
         self.CLOCK = pygame.time.Clock()
-        self.player, self.computer = "X", "O"
+        self.player, self.computer = "O", "X"
         self.players_turn, self.computer_choice = True, None
         self.computer_first, self.computer_second  = True, False
         self.win = False
@@ -69,11 +69,11 @@ class Game():
     def draw_winning_line(self, symbol, winning_line):
         for item in winning_line:
             if symbol == "O":
-                self.draw_symbol(win_circle_image, item[1], item[0])
+                self.draw_symbol(WIN_CIRCLE_IMAGE, item[1], item[0])
                 pygame.display.update()
                 pygame.time.delay(100)
             else:
-                self.draw_symbol(win_cross_image, item[1], item[0])
+                self.draw_symbol(WIN_CROSS_IMAGE, item[1], item[0])
                 pygame.display.update()
                 pygame.time.delay(100)
     
@@ -106,18 +106,18 @@ class Game():
         place_symbol(self.gamegrid, self.computer, arr)
         self.computer_choice = arr
         if self.computer == "O":
-            self.draw_symbol(chosen_circle_image, arr[1], arr[0])
+            self.draw_symbol(CHOSEN_CIRCLE_IMAGE, arr[1], arr[0])
         else:
-            self.draw_symbol(chosen_cross_image, arr[1], arr[0])
+            self.draw_symbol(CHOSEN_CROSS_IMAGE, arr[1], arr[0])
     
     def player_move(self, coord):
         x, y = math.floor(coord[0]/(self.WINDOW_SIZE/self.size)), math.floor(coord[1]/(self.WINDOW_SIZE/self.size))
         if place_symbol(self.gamegrid, self.player, (y, x)):
             self.players_turn = False
             if self.player == "O":
-                self.draw_symbol(circle_image, x, y)
+                self.draw_symbol(CIRCLE_IMAGE, x, y)
             else:
-                self.draw_symbol(cross_image, x, y)
+                self.draw_symbol(CROSS_IMAGE, x, y)
 
     def computer_move(self):
         boolean, player_value, player_moves = need_to_block(
@@ -139,9 +139,9 @@ class Game():
         place_symbol(self.gamegrid, self.computer, arr)
 
         if self.computer == "O":
-            self.draw_symbol(chosen_circle_image, arr[1], arr[0])
+            self.draw_symbol(CHOSEN_CIRCLE_IMAGE, arr[1], arr[0])
         else:
-            self.draw_symbol(chosen_cross_image, arr[1], arr[0])
+            self.draw_symbol(CHOSEN_CROSS_IMAGE, arr[1], arr[0])
 
 
     def check_events(self):
@@ -179,9 +179,9 @@ class Game():
             else:
                 if self.playing:
                     if self.computer == "O":
-                        self.draw_symbol(circle_image, self.computer_choice[1], self.computer_choice[0])
+                        self.draw_symbol(CIRCLE_IMAGE, self.computer_choice[1], self.computer_choice[0])
                     else:
-                        self.draw_symbol(cross_image, self.computer_choice[1], self.computer_choice[0])
+                        self.draw_symbol(CROSS_IMAGE, self.computer_choice[1], self.computer_choice[0])
                     self.computer_move()
                     win, line = check_win(self.gamegrid, self.size)
                     if win:
@@ -195,15 +195,14 @@ class Game():
     def end_screen(self):
         while self.end:
             self.check_events()
-            if self.draw_button(playagain_image, hover_playagain_image, 1 * self.WINDOW_SIZE/ 3, 2 * self.WINDOW_SIZE/ 3):
+            if self.draw_button(PLAYAGAIN_IMAGE, HOVER_PLAYAGAIN_IMAGE, 1 * self.WINDOW_SIZE/ 3, 2 * self.WINDOW_SIZE/ 3):
                 # play again
-                pass
+                return 1
 
-            if self.draw_button(mainmenu_image, hover_mainmenu_image, 2 * self.WINDOW_SIZE/ 3, 2 * self.WINDOW_SIZE/ 3):
+            if self.draw_button(MAINMENU_IMAGE, HOVER_MAINMENU_IMAGE, 2 * self.WINDOW_SIZE/ 3, 2 * self.WINDOW_SIZE/ 3):
                 # launch mine menu
                 pass
 
             pygame.display.update()
             self.CLOCK.tick(self.FPS)
     
-        return False

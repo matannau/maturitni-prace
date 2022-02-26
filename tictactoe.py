@@ -8,5 +8,6 @@ while game.running:
     game.draw_surface()
     game.game_loop()
     game.end = True
-    game.end_screen()
+    if game.end_screen():
+        game = Game()
 
