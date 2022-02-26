@@ -9,3 +9,4 @@ while game.running:
     game.game_loop()
     game.end = True
     game.end_screen()
+
