@@ -1,13 +1,15 @@
 from gui.game import Game
+from gui.menu import MainMenu
+from gui.menu import SuperMenu
 
 game = Game()
+mainmenu = MainMenu()
+super = SuperMenu()
 
-while game.running:
-    game.playing = True
-
-    game.draw_surface()
+while super.running:
+    mainmenu.display_menu()
     game.game_loop()
-    game.end = True
-    if game.end_screen():
+    while game.end_screen():
         game = Game()
-
+        game.game_loop()
+    game = Game()
