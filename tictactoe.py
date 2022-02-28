@@ -1,13 +1,14 @@
 from gui.game import Game
-from gui.menu import MainMenu
-from gui.menu import SuperMenu
+from gui.menu import MainMenu, Settings, SuperMenu
+import pygame
 
+pygame.init()
 game = Game()
-mainmenu = MainMenu()
-super = SuperMenu()
+mainmenu, settings, super = MainMenu(), Settings(), SuperMenu()
 
 while super.running:
-    mainmenu.display_menu()
+    while mainmenu.display_menu():
+        settings.display_settings()
     game.game_loop()
     while game.end_screen():
         game = Game()

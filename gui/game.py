@@ -1,6 +1,5 @@
 import pygame
 import math
-import sys
 from src.gui_func import create_points_horizontal, create_points_vertical, place_symbol
 from src.bot import find_best_move_value, get_move, find_primary_value, need_to_block
 from src.grid import create_grid
@@ -24,7 +23,7 @@ class Game(SuperMenu):
         super().__init__()
         self.playing, self.end = True, False
         self.gamegrid, self.size = create_grid(15)
-        self.player, self.computer = "O", "X"
+        self.player, self.computer = "X", "O"
         self.players_turn, self.computer_choice = True, None
         self.computer_first, self.computer_second  = True, False
         self.win = False
@@ -52,7 +51,7 @@ class Game(SuperMenu):
     
     def draw_end_screen(self, symbol, winning_line):
         self.draw_winning_line(symbol, winning_line)
-        win_text = self.font.render(f" {symbol} has won ", True, self.WHITE, self.BLACK)
+        win_text = self.FONT.render(f" {symbol} has won ", True, self.WHITE, self.BLACK)
         win_text_rect = win_text.get_rect()
         win_text_rect.center = (self.WINDOW_SIZE/2, self.WINDOW_SIZE/2 - self.WINDOW_SIZE/10)
 
@@ -134,7 +133,6 @@ class Game(SuperMenu):
                 pygame.display.update()
             
             if self.computer_second:
-                print("umbajaaa")
                 self.initial_move()
                 self.computer_second = False
             else:
@@ -160,12 +158,11 @@ class Game(SuperMenu):
             SCALE = 0.8 * (self.WINDOW_SIZE/700)
             Y = 2 * self.WINDOW_SIZE/ 3
             if self.draw_button(PLAYAGAIN_IMAGE, HOVER_PLAYAGAIN_IMAGE, 1 * self.WINDOW_SIZE/ 3, Y, SCALE):
-                # play again
+                pygame.time.delay(200)
                 return 1
 
             if self.draw_button(MAINMENU_IMAGE, HOVER_MAINMENU_IMAGE, 2 * self.WINDOW_SIZE/ 3, Y, SCALE):
-                # launch mine menu
-
+                pygame.time.delay(200)
                 return 0
 
             pygame.display.update()
