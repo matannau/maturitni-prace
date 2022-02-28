@@ -7,7 +7,7 @@ def create_grid(size):
         
         grid.append(row)
 
-    return grid, size
+    return grid
 
 '''
 Example:

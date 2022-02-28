@@ -1,0 +1,43 @@
+import pygame
+
+# MainMenu
+PVSP_BUTTON = pygame.image.load("resources/images/pvsp.png")
+PVSC_BUTTON = pygame.image.load("resources/images/pvsc.png")
+SETTINGS_BUTTON = pygame.image.load("resources/images/settings.png")
+SAVE_BUTTON = pygame.image.load("resources/images/save.png")
+HOVER_PVSP_BUTTON = pygame.image.load("resources/images/hover_pvsp.png")
+HOVER_PVSC_BUTTON = pygame.image.load("resources/images/hover_pvsc.png")
+HOVER_SETTINGS_BUTTON = pygame.image.load("resources/images/hover_settings.png")
+HOVER_SAVE_BUTTON = pygame.image.load("resources/images/hover_save.png")
+TICTAC = pygame.image.load("resources/images/tictactoe.png")
+BACKGROUND = pygame.image.load("resources/images/bg_color.png")
+
+# Settings
+DIF1_BUTTON = pygame.image.load("resources/images/dif_1.png")
+DIF2_BUTTON = pygame.image.load("resources/images/dif_2.png")
+DIF3_BUTTON = pygame.image.load("resources/images/dif_3.png")
+HOVER_DIF1_BUTTON = pygame.image.load("resources/images/hover_dif1.png")
+HOVER_DIF2_BUTTON = pygame.image.load("resources/images/hover_dif2.png")
+HOVER_DIF3_BUTTON = pygame.image.load("resources/images/hover_dif3.png")
+GRID10_BUTTON = pygame.image.load("resources/images/grid10.png")
+GRID15_BUTTON = pygame.image.load("resources/images/grid15.png")
+GRID20_BUTTON = pygame.image.load("resources/images/grid20.png")
+HOVER_GRID10_BUTTON = pygame.image.load("resources/images/hover_grid10.png")
+HOVER_GRID15_BUTTON = pygame.image.load("resources/images/hover_grid15.png")
+HOVER_GRID20_BUTTON = pygame.image.load("resources/images/hover_grid20.png")
+CIRCLE_BUTTON = pygame.image.load("resources/images/circle_button.png")
+CROSS_BUTTON = pygame.image.load("resources/images/cross_button.png")
+HOVER_CIRCLE_BUTTON = pygame.image.load("resources/images/hover_circle_button.png")
+HOVER_CROSS_BUTTON = pygame.image.load("resources/images/hover_cross_button.png")
+
+# Game
+CROSS_IMAGE = pygame.image.load("resources/images/cross.png")
+CIRCLE_IMAGE = pygame.image.load("resources/images/circle.png")
+WIN_CROSS_IMAGE = pygame.image.load("resources/images/WIN_Cross.png")
+WIN_CIRCLE_IMAGE = pygame.image.load("resources/images/WIN_Circle.png")
+CHOSEN_CROSS_IMAGE = pygame.image.load("resources/images/chosen_cross.png")
+CHOSEN_CIRCLE_IMAGE = pygame.image.load("resources/images/chosen_circle.png")
+PLAYAGAIN_IMAGE = pygame.image.load("resources/images/playagain.png")
+MAINMENU_IMAGE = pygame.image.load("resources/images/mainmenu.png")
+HOVER_PLAYAGAIN_IMAGE = pygame.image.load("resources/images/hover_playagain.png")
+HOVER_MAINMENU_IMAGE = pygame.image.load("resources/images/hover_mainmenu.png")

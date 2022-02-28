@@ -1,36 +1,32 @@
 import pygame
 import math
+import configparser
 from src.gui_func import create_points_horizontal, create_points_vertical, place_symbol
 from src.bot import find_best_move_value, get_move, find_primary_value, need_to_block
 from src.grid import create_grid
 from src.wincheck import check_win
 from . menu import SuperMenu
-
-
-CROSS_IMAGE = pygame.image.load("resources/images/cross.png")
-CIRCLE_IMAGE = pygame.image.load("resources/images/circle.png")
-WIN_CROSS_IMAGE = pygame.image.load("resources/images/WIN_Cross.png")
-WIN_CIRCLE_IMAGE = pygame.image.load("resources/images/WIN_Circle.png")
-CHOSEN_CROSS_IMAGE = pygame.image.load("resources/images/chosen_cross.png")
-CHOSEN_CIRCLE_IMAGE = pygame.image.load("resources/images/chosen_circle.png")
-PLAYAGAIN_IMAGE = pygame.image.load("resources/images/playagain.png")
-MAINMENU_IMAGE = pygame.image.load("resources/images/mainmenu.png")
-HOVER_PLAYAGAIN_IMAGE = pygame.image.load("resources/images/hover_playagain.png")
-HOVER_MAINMENU_IMAGE = pygame.image.load("resources/images/hover_mainmenu.png")
+from . images import *
 
 class Game(SuperMenu):
     def __init__(self):
         super().__init__()
+        self.player = self.config["client"]["playersymbol"]
+        self.computer = self.config["client"]["computersymbol"]
+        self.difficulty = int(self.config["client"]["difficulty"])
+        self.size = int(self.config["client"]["gridsize"])
+        
+        self.gamegrid = create_grid(self.size)
+
         self.playing, self.end = True, False
-        self.gamegrid, self.size = create_grid(15)
-        self.player, self.computer = "X", "O"
         self.players_turn, self.computer_choice = True, None
+        self.player1, self.player2 = "X", "O"
+        self.player1_turn, self.player2_turn = True, False
         self.computer_first, self.computer_second  = True, False
         self.win = False
-        self.difficulty = 3
 
-    
     def draw_surface(self):
+        # Draws a playing surface - a rectangle with size^2 spots
         self.SURFACE.fill(self.WHITE)
         start1, end1 = create_points_vertical(self.WINDOW_SIZE, self.size)
         start2, end2 = create_points_horizontal(self.WINDOW_SIZE, self.size)
@@ -41,6 +37,7 @@ class Game(SuperMenu):
             pygame.draw.line(self.SURFACE, self.GREY, start2[i], end2[i], LINE_WIDTH)
 
     def draw_symbol(self, image, x, y):
+        print(f"player: {self.player}, computer: {self.computer}")
         diameter = self.WINDOW_SIZE/self.size
         center = (diameter * (x + 1) - diameter/2, diameter * (y + 1) - diameter/2)
         image = pygame.transform.scale(image, (diameter - diameter/10, diameter - diameter/10))
@@ -78,11 +75,10 @@ class Game(SuperMenu):
         else:
             self.draw_symbol(CHOSEN_CROSS_IMAGE, arr[1], arr[0])
     
-    def player_move(self, coord):
+    def player_move(self, coord, player):
         x, y = math.floor(coord[0]/(self.WINDOW_SIZE/self.size)), math.floor(coord[1]/(self.WINDOW_SIZE/self.size))
-        if place_symbol(self.gamegrid, self.player, (y, x)):
-            self.players_turn = False
-            if self.player == "O":
+        if place_symbol(self.gamegrid, player, (y, x)):
+            if player == "O":
                 self.draw_symbol(CIRCLE_IMAGE, x, y)
             else:
                 self.draw_symbol(CROSS_IMAGE, x, y)
@@ -112,8 +108,7 @@ class Game(SuperMenu):
             self.draw_symbol(CHOSEN_CROSS_IMAGE, arr[1], arr[0])
         
 
-    def game_loop(self):
-        self.draw_surface()
+    def player_vs_computer(self):
         while self.playing:
             if self.computer_first:
                 self.initial_move()
@@ -122,7 +117,8 @@ class Game(SuperMenu):
             while self.players_turn:
                 clicked, coord = self.check_events()
                 if clicked:
-                    self.player_move(coord)
+                    self.player_move(coord, self.player)
+                    self.players_turn = False
                     win, line = check_win(self.gamegrid, self.size)
                     if win:
                         self.draw_end_screen(win, line)
@@ -151,6 +147,48 @@ class Game(SuperMenu):
             self.players_turn = True
             pygame.display.update()
             self.CLOCK.tick(self.FPS)
+    
+    def player_vs_player(self):
+        while self.playing:
+            while self.player1_turn:
+                clicked, coord = self.check_events()
+                if clicked:
+                    self.player_move(coord, self.player1)
+                    self.player1_turn = False
+                    win, line = check_win(self.gamegrid, self.size)
+                    if win:
+                        self.draw_end_screen(win, line)
+                        self.end = True
+                        self.playing = False
+                
+                self.CLOCK.tick(self.FPS)
+                pygame.display.update()
+            self.player2_turn = True
+            
+            if not self.end:
+                while self.player2_turn:
+                    clicked, coord = self.check_events()
+                    if clicked:
+                        self.player_move(coord, self.player2)
+                        self.player2_turn = False
+                        win, line = check_win(self.gamegrid, self.size)
+                        if win:
+                            self.draw_end_screen(win, line)
+                            self.end = True
+                            self.playing = False
+                
+                self.CLOCK.tick(self.FPS)
+                pygame.display.update()
+            
+                self.player1_turn = True
+
+    def game_loop(self, mode):
+        self.draw_surface()
+        if mode == 1:
+            self.player_vs_computer()
+        else:
+            self.player_vs_player()
+
     
     def end_screen(self):
         while self.end:

@@ -1,22 +1,14 @@
 import pygame
 import sys
-
-PVSP_BUTTON = pygame.image.load("resources/images/pvsp.png")
-PVSC_BUTTON = pygame.image.load("resources/images/pvsc.png")
-SETTINGS_BUTTON = pygame.image.load("resources/images/settings.png")
-SAVE_BUTTON = pygame.image.load("resources/images/save.png")
-HOVER_PVSP_BUTTON = pygame.image.load("resources/images/hover_pvsp.png")
-HOVER_PVSC_BUTTON = pygame.image.load("resources/images/hover_pvsc.png")
-HOVER_SETTINGS_BUTTON = pygame.image.load("resources/images/hover_settings.png")
-HOVER_SAVE_BUTTON = pygame.image.load("resources/images/hover_save.png")
-TICTAC = pygame.image.load("resources/images/tictactoe.png")
-BACKGROUND = pygame.image.load("resources/images/bg_color.png")
+import configparser
+from . images import *
 
 
 class SuperMenu():
     def __init__(self):
         pygame.init()
         ICON = pygame.image.load("resources/images/icon.png")
+        self.test = True
         self.running = True
         self.WHITE = (255, 255, 255)
         self.GREY = (192, 192, 192)
@@ -28,9 +20,11 @@ class SuperMenu():
             (self.WINDOW_SIZE, self.WINDOW_SIZE))
         pygame.display.set_caption("Tic-tac-toe")
         pygame.display.set_icon(ICON)
-        self.displays = pygame.display.get_desktop_sizes()
+        # self.displays = pygame.display.get_desktop_sizes()
         self.FONT = pygame.font.Font(
             "resources/acknowtt.ttf", int(self.WINDOW_SIZE/8))
+        self.config = configparser.ConfigParser()
+        self.config.read("resources/config.ini")
 
     def check_events(self):
         for event in pygame.event.get():
@@ -50,7 +44,7 @@ class SuperMenu():
 
         pos = pygame.mouse.get_pos()
         if image_rect.collidepoint(pos):
-            self.SURFACE.blit(hover, image_rect)
+            self.SURFACE.blit(hover, hover_rect)
             if pygame.mouse.get_pressed()[0]:
                 clicked = True
                 print(clicked)
@@ -69,17 +63,28 @@ class SuperMenu():
 
         return image, image_rect
     
-    def draw_background(self, image, x, y):
-        scale = 0.1 * (self.WINDOW_SIZE/125)
+    def draw_background(self, image, x, y, scale):
         image, image_rect = self.get_rect_image(image, x, y, scale)
         image_rect.topleft = (0, 0)
         self.SURFACE.blit(image, image_rect)
+    
+    def load_background(self, image, direction):
+        if direction == True:
+            number = 125
+        else:
+            number = 25
+        for i in range(20):
+            number -= direction * 5
+            self.draw_background(image, 0, 0, 0.1 * (self.WINDOW_SIZE/number))
+            pygame.display.update()
+            self.CLOCK.tick(self.FPS + 30)
 
 
 class MainMenu(SuperMenu):
     def __init__(self):
         super().__init__()
         self.run_mainmenu = True
+        self.mode = 0
     
     def draw_tictactoe(self, image, x, y):
         scale = self.WINDOW_SIZE / 1000
@@ -87,20 +92,21 @@ class MainMenu(SuperMenu):
         self.SURFACE.blit(image, image_rect)
 
     def display_menu(self):
-        self.draw_background(BACKGROUND, 0, 0)
+        self.load_background(BACKGROUND, -1)
         while self.run_mainmenu:
             SCALE = 0.6 * (self.WINDOW_SIZE/700)
             X = self.WINDOW_SIZE/2
             self.check_events()
             self.draw_tictactoe(TICTAC, self.WINDOW_SIZE/2, 1 * self.WINDOW_SIZE/4)
             if self.draw_button(PVSC_BUTTON, HOVER_PVSC_BUTTON, X, 3 * self.WINDOW_SIZE/6, SCALE):
-                pygame.time.delay(200)
-                return False
+                self.mode = 1
+                return True
             if self.draw_button(PVSP_BUTTON, HOVER_PVSP_BUTTON, X, 4 * self.WINDOW_SIZE/6, SCALE):
-                pass
+                self.mode = 2
+                return True
             if self.draw_button(SETTINGS_BUTTON, HOVER_SETTINGS_BUTTON, X, 5 * self.WINDOW_SIZE/6, SCALE):
                 pygame.time.delay(200)
-                return True
+                return False
             pygame.display.update()
             self.CLOCK.tick(self.FPS)
 
@@ -127,16 +133,71 @@ class Settings(SuperMenu):
         self.display_text("Difficulty", self.WINDOW_SIZE/15, 3 *self.WINDOW_SIZE/11, 22, False)
         self.display_text("Grid size", self.WINDOW_SIZE/15, 4.5 *self.WINDOW_SIZE/11, 22, False)
         self.display_text("Player symbol", self.WINDOW_SIZE/15, 6 *self.WINDOW_SIZE/11, 22, False)
-        self.display_text("Mode", self.WINDOW_SIZE/15, 7.5 *self.WINDOW_SIZE/11, 22, False)
+    
+    def display_difficulty_buttons(self, scale):
+        # Versions must be made first
+        if not self.config["client"]["difficulty"] == "1":
+            if self.draw_button(DIF1_BUTTON, HOVER_DIF1_BUTTON, 4 *self.WINDOW_SIZE/10, 29.5 *self.WINDOW_SIZE/100, scale):
+                # self.config["client"]["difficulty"] = "1"
+                pass
+        if not self.config["client"]["difficulty"] == "2":
+            if self.draw_button(DIF2_BUTTON, HOVER_DIF2_BUTTON, 6 * self.WINDOW_SIZE/10, 29.5 *self.WINDOW_SIZE/100, scale):
+                # self.config["client"]["difficulty"] = "2"
+                pass
+        if not self.config["client"]["difficulty"] == "3":
+            if self.draw_button(DIF3_BUTTON, HOVER_DIF3_BUTTON, 8 * self.WINDOW_SIZE/10, 29.5 *self.WINDOW_SIZE/100, scale):
+                # self.config["client"]["difficulty"] = "3"
+                pass
+
+    def display_grid_buttons(self, scale):
+        if not self.config["client"]["gridsize"] == "10":
+            if self.draw_button(GRID10_BUTTON, HOVER_GRID10_BUTTON, 4 *self.WINDOW_SIZE/10, 43 *self.WINDOW_SIZE/100, scale):
+                self.config["client"]["gridsize"] = "10"
+        if not self.config["client"]["gridsize"] == "15":
+            if self.draw_button(GRID15_BUTTON, HOVER_GRID15_BUTTON, 6 * self.WINDOW_SIZE/10, 43 *self.WINDOW_SIZE/100, scale):
+                self.config["client"]["gridsize"] = "15"
+        if not self.config["client"]["gridsize"] == "20":
+            if self.draw_button(GRID20_BUTTON, HOVER_GRID20_BUTTON, 8 * self.WINDOW_SIZE/10, 43 *self.WINDOW_SIZE/100, scale):
+                self.config["client"]["gridsize"] = "20"
+    
+    def display_symbol_buttons(self, scale):
+        if not self.config["client"]["playersymbol"] == "O":
+            if self.draw_button(CIRCLE_BUTTON, HOVER_CIRCLE_BUTTON, 5 * self.WINDOW_SIZE/10, 56.75 *self.WINDOW_SIZE/100, scale):
+                self.config["client"]["playersymbol"] = "O"
+                self.config["client"]["computersymbol"] = "X"
+        if not self.config["client"]["playersymbol"] == "X":
+            if self.draw_button(CROSS_BUTTON, HOVER_CROSS_BUTTON, 7 * self.WINDOW_SIZE/10, 56.75 *self.WINDOW_SIZE/100, scale):
+                self.config["client"]["playersymbol"] = "X"
+                self.config["client"]["computersymbol"] = "O"
+
+    def display_buttons(self):
+        SCALE = 0.4 * (self.WINDOW_SIZE/700)
+        if self.draw_button(SAVE_BUTTON, HOVER_SAVE_BUTTON, self.WINDOW_SIZE/2, 8 * self.WINDOW_SIZE/9, 0.5 * (self.WINDOW_SIZE/700)):
+            with open("resources/config.ini", "w") as file:
+                self.config.write(file)
+            return True
+        self.display_difficulty_buttons(SCALE)
+        self.display_grid_buttons(SCALE)
+        self.display_symbol_buttons(SCALE)
+    
+    def display_grey_buttons(self, scale):
+        self.draw_button(HOVER_DIF1_BUTTON, HOVER_DIF1_BUTTON, 4 *self.WINDOW_SIZE/10, 29.5 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_DIF2_BUTTON, HOVER_DIF2_BUTTON, 6 * self.WINDOW_SIZE/10, 29.5 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_DIF3_BUTTON, HOVER_DIF3_BUTTON, 8 * self.WINDOW_SIZE/10, 29.5 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_GRID10_BUTTON, HOVER_GRID10_BUTTON, 4 *self.WINDOW_SIZE/10, 43 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_GRID15_BUTTON, HOVER_GRID15_BUTTON, 6 * self.WINDOW_SIZE/10, 43 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_GRID20_BUTTON, HOVER_GRID20_BUTTON, 8 * self.WINDOW_SIZE/10, 43 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_CIRCLE_BUTTON, HOVER_CIRCLE_BUTTON, 5 * self.WINDOW_SIZE/10, 56.75 *self.WINDOW_SIZE/100, scale)
+        self.draw_button(HOVER_CROSS_BUTTON, HOVER_CROSS_BUTTON, 7 * self.WINDOW_SIZE/10, 56.75 *self.WINDOW_SIZE/100, scale)
+        
 
     def display_settings(self):
-        self.draw_background(BACKGROUND, 0, 0)
+        self.load_background(BACKGROUND, 1)
         self.display_settings_text()
+        self.display_grey_buttons(0.4 * (self.WINDOW_SIZE/700))
         while self.run_settings:
             self.check_events()
-            SCALE = 0.5 * (self.WINDOW_SIZE/700)
-            if self.draw_button(SAVE_BUTTON, HOVER_SAVE_BUTTON, self.WINDOW_SIZE/2, 8 * self.WINDOW_SIZE/9, SCALE):
-                pygame.time.delay(200)
+            if self.display_buttons():
                 return
             pygame.display.update()
             self.CLOCK.tick(self.FPS)
