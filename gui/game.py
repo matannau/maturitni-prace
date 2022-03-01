@@ -1,12 +1,11 @@
 import pygame
 import math
-import configparser
 from src.gui_func import create_points_horizontal, create_points_vertical, place_symbol
 from src.bot import find_best_move_value, get_move, find_primary_value, need_to_block
 from src.grid import create_grid
 from src.wincheck import check_win
 from . menu import SuperMenu
-from . images import *
+from .images_game import *
 
 class Game(SuperMenu):
     def __init__(self):
@@ -37,7 +36,7 @@ class Game(SuperMenu):
             pygame.draw.line(self.SURFACE, self.GREY, start2[i], end2[i], LINE_WIDTH)
 
     def draw_symbol(self, image, x, y):
-        print(f"player: {self.player}, computer: {self.computer}")
+        # Draws a cross or a circle on the playing surface
         diameter = self.WINDOW_SIZE/self.size
         center = (diameter * (x + 1) - diameter/2, diameter * (y + 1) - diameter/2)
         image = pygame.transform.scale(image, (diameter - diameter/10, diameter - diameter/10))
@@ -75,9 +74,10 @@ class Game(SuperMenu):
         else:
             self.draw_symbol(CHOSEN_CROSS_IMAGE, arr[1], arr[0])
     
-    def player_move(self, coord, player):
+    def player_move(self, coord, player, turn):
         x, y = math.floor(coord[0]/(self.WINDOW_SIZE/self.size)), math.floor(coord[1]/(self.WINDOW_SIZE/self.size))
         if place_symbol(self.gamegrid, player, (y, x)):
+            self.players_turn = self.player1_turn = self.player2_turn = False
             if player == "O":
                 self.draw_symbol(CIRCLE_IMAGE, x, y)
             else:
@@ -117,8 +117,7 @@ class Game(SuperMenu):
             while self.players_turn:
                 clicked, coord = self.check_events()
                 if clicked:
-                    self.player_move(coord, self.player)
-                    self.players_turn = False
+                    self.player_move(coord, self.player, self.players_turn)
                     win, line = check_win(self.gamegrid, self.size)
                     if win:
                         self.draw_end_screen(win, line)
@@ -149,12 +148,13 @@ class Game(SuperMenu):
             self.CLOCK.tick(self.FPS)
     
     def player_vs_player(self):
+        # Game loop for player vs player mode
+        # While game loop is true, players take turns,
         while self.playing:
             while self.player1_turn:
                 clicked, coord = self.check_events()
                 if clicked:
-                    self.player_move(coord, self.player1)
-                    self.player1_turn = False
+                    self.player_move(coord, self.player1, self.player1_turn)
                     win, line = check_win(self.gamegrid, self.size)
                     if win:
                         self.draw_end_screen(win, line)
@@ -169,8 +169,7 @@ class Game(SuperMenu):
                 while self.player2_turn:
                     clicked, coord = self.check_events()
                     if clicked:
-                        self.player_move(coord, self.player2)
-                        self.player2_turn = False
+                        self.player_move(coord, self.player2, self.player2_turn)
                         win, line = check_win(self.gamegrid, self.size)
                         if win:
                             self.draw_end_screen(win, line)
@@ -183,6 +182,8 @@ class Game(SuperMenu):
                 self.player1_turn = True
 
     def game_loop(self, mode):
+        # If game mode is set to 1 (1 player), player vs computer
+        # is launched, otherwise player vs player is
         self.draw_surface()
         if mode == 1:
             self.player_vs_computer()
@@ -196,11 +197,11 @@ class Game(SuperMenu):
             SCALE = 0.8 * (self.WINDOW_SIZE/700)
             Y = 2 * self.WINDOW_SIZE/ 3
             if self.draw_button(PLAYAGAIN_IMAGE, HOVER_PLAYAGAIN_IMAGE, 1 * self.WINDOW_SIZE/ 3, Y, SCALE):
-                pygame.time.delay(200)
+                pygame.time.delay(250)
                 return 1
 
             if self.draw_button(MAINMENU_IMAGE, HOVER_MAINMENU_IMAGE, 2 * self.WINDOW_SIZE/ 3, Y, SCALE):
-                pygame.time.delay(200)
+                pygame.time.delay(250)
                 return 0
 
             pygame.display.update()
