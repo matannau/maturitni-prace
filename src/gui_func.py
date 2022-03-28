@@ -1,4 +1,6 @@
 def create_points_vertical(size, spots):
+    # This function defines the spots where vertical
+    # lines on the game grid should start and end
     start_points = []
     end_points = []
     x = 0
@@ -12,6 +14,8 @@ def create_points_vertical(size, spots):
 
 
 def create_points_horizontal(size, spots):
+    # This function defines the spots where horizontal
+    # lines on the game grid should start and end
     start_points = []
     end_points = []
     x = 0
@@ -23,20 +27,9 @@ def create_points_horizontal(size, spots):
 
     return start_points, end_points
 
-def load_grid(grid, size):
-    print("    0    1    2    3    4    5    6    7    8    9")
-    for i in range(size):
-        for j in range(size):
-            if j == 0:
-                print(i, grid[i][j], end="")
-            elif j == size - 1:
-                print(grid[i][j])
-            else:
-                print(grid[i][j], end="")
-
-    print("\n")
 
 def place_symbol(grid, symbol, coordinates):
+    # Places a symbol on the given coordinates if it is empty
     if grid[coordinates[0]][coordinates[1]] == ["_"]:
         grid[coordinates[0]][coordinates[1]] = [symbol]
         return True

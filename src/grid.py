@@ -1,4 +1,5 @@
 def create_grid(size):
+    # Creates a multidimensional list based on the given size
     grid = []
     for _ in range(size):
         row = []

@@ -1,9 +1,9 @@
 from gui.game import Game
 from gui.menu import MainMenu, Settings, SuperMenu
 
-mainmenu, settings, super = MainMenu(), Settings(), SuperMenu()
+mainmenu, settings, supermenu = MainMenu(), Settings(), SuperMenu()
 mainmenu.display_rectangle()
-while super.running:
+while supermenu.running:
     while not mainmenu.display_menu():
         settings.display_settings()
     game = Game()
