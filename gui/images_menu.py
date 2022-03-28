@@ -34,4 +34,3 @@ SAVE_BUTTON = pygame.image.load("resources/images/save.png")
 RESET_BUTTON = pygame.image.load("resources/images/reset.png")
 HOVER_RESET_BUTTON = pygame.image.load("resources/images/hover_reset.png")
 HOVER_SAVE_BUTTON = pygame.image.load("resources/images/hover_save.png")
-

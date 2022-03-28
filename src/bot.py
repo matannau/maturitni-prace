@@ -1,38 +1,4 @@
 import random
-import copy
-
-
-def create_grid(size):
-    grid = []
-    for i in range(size):
-        row = []
-        for j in range(size):
-            row.append(["_"])
-
-        grid.append(row)
-
-    return grid, size
-
-
-def load_grid(grid, size):
-    print("    0    1    2    3    4    5    6    7    8    9")
-    for i in range(size):
-        for j in range(size):
-            if j == 0:
-                print(i, grid[i][j], end="")
-            elif j == size - 1:
-                print(grid[i][j])
-            else:
-                print(grid[i][j], end="")
-
-    print("\n")
-
-
-def place_symbol(grid, symbol, coordinates):
-    if grid[coordinates[0]][coordinates[1]] == ["_"]:
-        grid[coordinates[0]][coordinates[1]] = [symbol]
-    else:
-        print("You can not chose this spot")
 
 
 def check_spaces(i, j, size, grid, player_symbol):
@@ -130,11 +96,11 @@ def loop_increment_basic(i, j, size, grid, player_symbol, computer_symbol):
 
 def loop_increment_primary(i, j, size, grid, player_symbol):
     # Calls function check_spaces in all 8 directions and returns a number
-    # of different moves that can be played
+    # of different moves that can be played (for the very first move)
     value = 8
     for y in range(-1, 2):
         for x in range(-1, 2):
-            if not check_spaces(i + 2*y, j + 2*x, size, grid, player_symbol):
+            if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
                 value -= 1
 
     return value
@@ -167,13 +133,28 @@ def find_forks(moves):
     return possible_moves
 
 
+def probability_maker(number):
+    # A function to create probability of something,
+    # number represents the percentage
+    if number > random.randint(1, 100):
+        return False
+    return True
+
+
 def find_best_move_value(grid, size, player_symbol, computer_symbol, difficulty=3):
     # Creates a list of coordinates with its values and then loops through
     # them to find the best one
+    #
+    # Based on the difficulty it searches for the forks
+    # Difficulty 3 searches every move, difficulty 2 has a 50 percent chance it will
+    # and difficulty 1 doesn't search at all
     moves = find_move_value(grid, size, player_symbol, computer_symbol)
 
     if difficulty == 3:
         moves = find_forks(moves)
+    elif difficulty == 2:
+        if probability_maker(50):
+            moves = find_forks(moves)
 
     value = float("inf")
     for move in moves:
@@ -203,7 +184,7 @@ def get_direction(i, j):
 
 
 def check_potential_development(i, j, size, grid, player_symbol, computer_symbol, y, x):
-    # Checks 4 spots next to grid[i + y, j + x] in selected direction and then
+    # Checks 4 spots next to grid[i, j] in selected direction and then
     # counts the value od grid[i + y, j + x] based on it
     #
     # y -> i, x -> j
@@ -215,22 +196,25 @@ def check_potential_development(i, j, size, grid, player_symbol, computer_symbol
         elif space == [player_symbol]:
             value += 10
 
-    if value > 1:
+    if value >= 2:
         if not check_spaces(i + 3*y, j + 3*x, size, grid, player_symbol):
             value += 1
         if not check_spaces(i - 3*y, j - 3*x, size, grid, player_symbol):
             value += 1
 
-    if check_if_computer(i + 3*y, j + 3*x, size, grid, computer_symbol):
-        value -= 1
-    if check_if_computer(i - 3*y, j - 3*x, size, grid, computer_symbol):
-        value -= 1
+        if check_if_computer(i + 3*y, j + 3*x, size, grid, computer_symbol):
+            value -= 1
+        if check_if_computer(i - 3*y, j - 3*x, size, grid, computer_symbol):
+            value -= 1
 
     move = [i + y, j + x, value, get_direction(y, x)]
     return move
 
 
 def find_primary_value(grid, size, player_symbol):
+    # A function to determine the favourableness of possible moves
+    # for the first bot's move
+    #
     # Counts the value of each spot in the grid and then it add it with
     # coordinates to possible moves
     possible_moves = []
@@ -260,6 +244,8 @@ def find_move_value(grid, size, player_symbol, computer_symbol):
                         possible_moves.append(item)
 
     if possible_moves == []:
+        # if no optimal moves could have been done,
+        # it creates a list of all empty spots of the grid
         moves = find_all_empty_spots(grid, size)
         for item in moves:
             possible_moves.append(item)
@@ -269,11 +255,22 @@ def find_move_value(grid, size, player_symbol, computer_symbol):
 
 def need_to_block(grid, size, computer_symbol, player_symbol, difficulty):
     # Counts values of spots that can be chosen by the player.
-    # If the value is less than 3, it needs to be blocked (it's a winning move)
+    # If the value is less than or 2, it needs to be blocked (it's a winning move)
+    #
+    # In addition, difficulty 2 has a 5 percent chance it won't block when it's
+    # needed and difficulty 1 has this chance increased to 20 percent.
     value, moves = find_best_move_value(
         grid, size, computer_symbol, player_symbol, difficulty)
 
-    if value < 3:
+    if value <= 2:
+        if difficulty == 2:
+            if not probability_maker(5):
+                print("Bot didn't block")
+                return False, [], []
+        elif difficulty == 1:
+            if not probability_maker(20):
+                print("Bot didn't block")
+                return False, [], []
         return True, value, moves
     else:
         return False, [], []
@@ -290,49 +287,19 @@ def filter_moves(best_value, possible_moves):
     return best_moves
 
 
-def make_a_move(grid, size, player_symbol, computer_symbol):
-    value, moves = find_best_move_value(
-        grid, size, player_symbol, computer_symbol)
-    block, value2, moves2 = need_to_block(
-        grid, size, computer_symbol, player_symbol)
-    if block:
-        if value2 <= value:
-            arr = get_move(value2, moves2)
-        else:
-            arr = get_move(value, moves)
-    else:
-        arr = get_move(value, moves)
-    place_symbol(grid, computer_symbol, arr)
+def get_move(best_value, possible_moves, difficulty, computer_move):
+    # Chooses randomly one of the best moves based on the difficulty
+    # Difficulty 1 has an 80 percent chance it would choose a
+    # completely random move (not the optimal one) and difficulty 2
+    # has a 10 percent chance
+    if computer_move and difficulty == 1:
+        if not probability_maker(80):
+            print(f"Not an optimal move")
+            return random.choice(possible_moves)
 
+    if computer_move and difficulty == 2:
+        if not probability_maker(10):
+            print(f"Not an optimal move")
+            return random.choice(possible_moves)
 
-    return arr
-
-
-def prediction(grid, size, player_symbol, computer_symbol):
-    pass
-
-
-
-def get_move(best_value, possible_moves):
-    # Chooses randomly one of the best moves
-    best_moves = filter_moves(best_value, possible_moves)
-
-    return random.choice(best_moves)
-
-
-'''
-Tests :)
-'''
-if __name__ == "__main__":
-    gamegrid, size = [
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["X"], ["_"], ["_"], ["O"], ["O"], ["_"], ["T"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["O"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["O"], ["_"], ["_"], ["_"], ["_"], ["_"]],
-        [["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"], ["_"]]
-    ], 10
+    return random.choice(filter_moves(best_value, possible_moves))
